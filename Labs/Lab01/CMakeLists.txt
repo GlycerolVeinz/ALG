@@ -7,6 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
  
 add_executable(lab01
     Lab_exercises01.cpp
+    # LoopCalc.cpp
 )
  
 # Zapneme rozumnou sadu varování

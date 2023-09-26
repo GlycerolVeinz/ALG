@@ -10,14 +10,13 @@ void uvw()
 
 int main()
 {
-    int i = 0;
-    while (i < 10)
+    int n = 5;
+    for (int k = 0; k < n - 1; k++)
     {
-        for (int j = i; j < 13; j++)
+        for (int j = 0; j < 2 * k; j++)
         {
             uvw();
         }
-        i++;
     }
 
     return 0;
