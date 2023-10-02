@@ -19,7 +19,7 @@ int main() {
 
 
 
-    return 0;
+    exit(SUCCESS);
 }
 
 
@@ -29,28 +29,43 @@ park read_input(){
 
     park park = {N_whole_area, K_outer_park_area, L_inner_park_area_gap, S_minimal_mountain_count};
 
+    int forests_summ = 0;
+    int mountains_summ = 0;
+
     for (int i = 0; i < N_whole_area * N_whole_area; ++i) {
         char tile;
         std::cin >> tile;
         park.park_map.push_back(tile);
 
-        switch (tile) {
-            case Field:
-                park.forests_map_count.push_back(0);
-                park.mountains_map_sum.push_back(0);
-                break;
-            case Forest:
-                park.forests_map_count.push_back(1);
-                park.mountains_map_sum.push_back(0);
-                break;
-            case Mountain:
-                park.forests_map_count.push_back(0);
-                park.mountains_map_sum.push_back(1);
-                break;
+        if (i % N_whole_area == 0) {
+            forests_summ = 0;
+            mountains_summ = 0;
         }
 
-
+        calculate_partial_summs(&park, tile, forests_summ, mountains_summ);
     }
 
     return park;
 }
+
+
+void calculate_partial_summs(park *park, char tile, int forests_summ, int mountains_summ) {
+    switch (tile) {
+        case Field:
+            park->forests_map_count.push_back(forests_summ);
+            park->mountains_map_sum.push_back(mountains_summ);
+            break;
+        case Forest:
+            park->forests_map_count.push_back(++forests_summ);
+            park->mountains_map_sum.push_back(mountains_summ);
+            break;
+        case Mountain:
+            park->forests_map_count.push_back(forests_summ);
+            park->mountains_map_sum.push_back(++mountains_summ);
+            break;
+        default:
+            std::cout << "Invalid input" << std::endl;
+            exit(ERR_INPUT);
+    }
+}
+
