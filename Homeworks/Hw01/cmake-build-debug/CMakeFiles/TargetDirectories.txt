@@ -1,0 +1,3 @@
+/home/glycerolveinz/Cvut/ALG/Homeworks/Hw01/cmake-build-debug/CMakeFiles/Hw01.dir
+/home/glycerolveinz/Cvut/ALG/Homeworks/Hw01/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/glycerolveinz/Cvut/ALG/Homeworks/Hw01/cmake-build-debug/CMakeFiles/rebuild_cache.dir
