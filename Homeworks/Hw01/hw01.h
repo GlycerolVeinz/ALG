@@ -14,6 +14,8 @@
 struct park {
     int N_whole_area{}, K_outer_park_area{}, L_inner_park_area_gap{}, S_minimal_mountain_count{};
     int inner_park_length = K_outer_park_area - 2 * L_inner_park_area_gap;
+    int inner_park_min_possible = L_inner_park_area_gap;
+    int inner_park_max_possible = N_whole_area - L_inner_park_area_gap;
 
     #define COORD(x, y) (x + y * N_whole_area)
     #define Field 0

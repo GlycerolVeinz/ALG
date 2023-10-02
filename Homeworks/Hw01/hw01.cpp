@@ -8,16 +8,28 @@
 
 int main() {
 
-    park park = read_input();
-
 //    inner park must have at least S number of mountains
 //    outer park must have maximal amount of forests
+    park park = read_input();
+
+    for (int i = park.inner_park_min_possible; i < park.inner_park_max_possible; ++i) {
+        for (int j = park.inner_park_min_possible; j < park.inner_park_max_possible; ++j) {
+            int mountains_in_row = park.mountains_map_sum[COORD(j,i)];
+        }
+    }
+
 
 //    iterate through the whole map and find optimal park locations
+//    for every possible inner park location
+//    check if it has enough mountains (use partial summs)
+
+
+
+
 //      from all parks select ones with the most forests
+//      use partial summs
+
 //      output amount of optimal parks
-
-
 
     exit(SUCCESS);
 }
