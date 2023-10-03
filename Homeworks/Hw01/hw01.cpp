@@ -16,6 +16,7 @@ int main() {
 //  check if it has enough mountains (use partial summs)
 
     std::vector<park> viable_parks;
+    int max_trees_count = 0;
 
     for (int i = 0; i < map.N_whole_area - map.K_outer_park_area; ++i) {
         for (int j = 0; j < map.N_whole_area - map.K_outer_park_area; ++j) {
@@ -23,7 +24,14 @@ int main() {
             park park = add_viable_parks(&map, &viable_parks, i, j);
 
 //          count forests in a park
+            if (! park.is_viable) {
+                continue;
+            }
 
+            int forests_count = 0;
+            for (int k = 0; k < map.K_outer_park_area; ++k) {
+
+            }
         }
     }
 
