@@ -2,8 +2,8 @@
 // Created by glycerolveinz on 2.10.23.
 //
 
-#ifndef HW01_HW01_H
-#define HW01_HW01_H
+#ifndef HW01_H
+#define HW01_H
 
 #include <vector>
 #include <iostream>
@@ -37,10 +37,8 @@ struct park {
     COORD top_left_position{};
     bool is_optimal = false;
     bool is_viable = false;
-    int trees_count = 0;
+    int forests_count = 0;
 };
-
-//bool is_inner_park(int x, int y, map *map);
 
 park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j);
 
@@ -48,4 +46,4 @@ map read_input();
 
 void calculate_partial_summs(map *map, char tile, int forests_summ, int mountains_summ);
 
-#endif //HW01_HW01_H
+#endif //HW01_H

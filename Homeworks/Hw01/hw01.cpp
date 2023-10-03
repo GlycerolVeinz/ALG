@@ -23,15 +23,19 @@ int main() {
 //          check mountains for viability of a park
             park park = add_viable_parks(&map, &viable_parks, i, j);
 
-//          count forests in a park
-            if (! park.is_viable) {
-                continue;
-            }
-
+//          count forests in a viable park
+            if (! park.is_viable) continue;
             int forests_count = 0;
-            for (int k = 0; k < map.K_outer_park_area; ++k) {
 
+            for (int k = 0; k < map.K_outer_park_area; ++k) {
+                int left_park = park.top_left_position.to_int + k;
+                int right_park = park.top_left_position.to_int + map.K_outer_park_area + k;
+
+                forests_count += map.forests_map_count[right_park] - map.forests_map_count[left_park];
             }
+
+            if (forests_count > max_trees_count) max_trees_count = forests_count;
+            park.forests_count = forests_count;
         }
     }
 
@@ -41,16 +45,6 @@ int main() {
     exit(SUCCESS);
 }
 // EOF main ===========================================================================================================
-
-
-//bool is_inner_park(int x, int y, map *map) {
-//    bool ret = false;
-//    if ((x > map->inner_park_min) && (x < map->inner_park_max) && y > (map->inner_park_min) &&
-//        (y < map->inner_park_max)) {
-//        ret = true;
-//    }
-//    return ret;
-//}
 
 
 map read_input() {
@@ -105,7 +99,10 @@ park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j){
     int mountain_count = 0;
 
     for (int k = 0; k < map->inner_park_length; ++k) {
-        mountain_count += map->mountains_map_sum[inner_top_right_corner.to_int + k] - map->mountains_map_sum[inner_top_left_corner.to_int + k - 1];
+        int left_park = inner_top_left_corner.to_int + k;
+        int right_park = inner_top_right_corner.to_int + k;
+
+        mountain_count += map->mountains_map_sum[right_park] - map->mountains_map_sum[left_park];
 
         if (mountain_count == map->S_minimal_mountain_count) {
             is_viable = true;
