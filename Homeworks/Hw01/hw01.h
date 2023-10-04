@@ -22,7 +22,7 @@ struct map {
 #define Forest 1
 #define Mountain 2
 
-    std::vector<char> park_map;
+    std::vector<int> park_map;
     std::vector<int> mountains_map_sum;
     std::vector<int> forests_map_count;
 };
@@ -41,9 +41,9 @@ struct park {
 };
 
 park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j);
-
+void count_trees_in_park(park *park, map *map, int &max_trees_count);
 map read_input();
+void calculate_partial_summs(map *map, int tile, int forests_summ, int mountains_summ);
 
-void calculate_partial_summs(map *map, char tile, int forests_summ, int mountains_summ);
 
 #endif //HW01_H

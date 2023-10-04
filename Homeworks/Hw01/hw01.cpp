@@ -6,15 +6,11 @@
 
 // main ================================================================================================================
 int main() {
-
-//    inner map must have at least S number of mountains
-//    outer map must have maximal amount of forests
     map map = read_input();
 
 //  iterate through the whole map and find optimal map locations
 //  for every possible inner park location
 //  check if it has enough mountains (use partial summs)
-
     std::vector<park> viable_parks;
     int max_trees_count = 0;
 
@@ -24,55 +20,28 @@ int main() {
             park park = add_viable_parks(&map, &viable_parks, i, j);
 
 //          count forests in a viable park
-            if (! park.is_viable) continue;
-            int forests_count = 0;
+            if (!park.is_viable) continue;
 
-            for (int k = 0; k < map.K_outer_park_area; ++k) {
-                int left_park = park.top_left_position.to_int + k;
-                int right_park = park.top_left_position.to_int + map.K_outer_park_area + k;
-
-                forests_count += map.forests_map_count[right_park] - map.forests_map_count[left_park];
-            }
-
-            if (forests_count > max_trees_count) max_trees_count = forests_count;
-            park.forests_count = forests_count;
+            count_trees_in_park(&park, &map, max_trees_count);
         }
     }
 
+    int optimal_parks_count = 0;
+    for (park park: viable_parks) {
+        if (park.forests_count == max_trees_count) {
+            park.is_optimal = true;
+            ++optimal_parks_count;
+        }
+    }
 
-//      output amount of optimal parks
+    std::cout << optimal_parks_count << std::endl;
 
     exit(SUCCESS);
 }
 // EOF main ===========================================================================================================
 
 
-map read_input() {
-    int N_whole_area, K_outer_park_area, L_inner_park_area_gap, S_minimal_mountain_count;
-    std::cin >> N_whole_area >> K_outer_park_area >> L_inner_park_area_gap >> S_minimal_mountain_count;
-
-    map park = {N_whole_area, K_outer_park_area, L_inner_park_area_gap, S_minimal_mountain_count};
-
-    int forests_summ = 0;
-    int mountains_summ = 0;
-
-    for (int i = 0; i < N_whole_area * N_whole_area; ++i) {
-        char tile;
-        std::cin >> tile;
-        park.park_map.push_back(tile);
-
-        if (i % N_whole_area == 0) {
-            forests_summ = 0;
-            mountains_summ = 0;
-        }
-
-        calculate_partial_summs(&park, tile, forests_summ, mountains_summ);
-    }
-
-    return park;
-}
-
-void calculate_partial_summs(map *map, char tile, int forests_summ, int mountains_summ) {
+void calculate_partial_summs(map *map, int tile, int forests_summ, int mountains_summ) {
     switch (tile) {
         case Field:
             map->forests_map_count.push_back(forests_summ);
@@ -92,10 +61,36 @@ void calculate_partial_summs(map *map, char tile, int forests_summ, int mountain
     }
 }
 
-park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j){
+map read_input() {
+    int N_whole_area, K_outer_park_area, L_inner_park_area_gap, S_minimal_mountain_count;
+    std::cin >> N_whole_area >> K_outer_park_area >> L_inner_park_area_gap >> S_minimal_mountain_count;
+
+    map park = {N_whole_area, K_outer_park_area, L_inner_park_area_gap, S_minimal_mountain_count};
+
+    int forests_summ = 0;
+    int mountains_summ = 0;
+
+    for (int i = 0; i < N_whole_area * N_whole_area; ++i) {
+        int tile;
+        std::cin >> tile;
+        park.park_map.push_back(tile);
+
+        if (i % N_whole_area == 0) {
+            forests_summ = 0;
+            mountains_summ = 0;
+        }
+
+        calculate_partial_summs(&park, tile, forests_summ, mountains_summ);
+    }
+
+    return park;
+}
+
+park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j) {
     bool is_viable = false;
     COORD inner_top_left_corner = {j + map->L_inner_park_area_gap, i + map->L_inner_park_area_gap};
-    COORD inner_top_right_corner = {j + map->L_inner_park_area_gap + map->inner_park_length,i + map->L_inner_park_area_gap + map->inner_park_length};
+    COORD inner_top_right_corner = {j + map->L_inner_park_area_gap + map->inner_park_length,
+                                    i + map->L_inner_park_area_gap + map->inner_park_length};
     int mountain_count = 0;
 
     for (int k = 0; k < map->inner_park_length; ++k) {
@@ -115,4 +110,18 @@ park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j){
     viable_parks->push_back(park);
 
     return park;
+}
+
+void count_trees_in_park(park *park, map *map, int &max_trees_count) {
+    int forests_count = 0;
+
+    for (int k = 0; k < map->K_outer_park_area; ++k) {
+        int left_park = park->top_left_position.to_int + k;
+        int right_park = park->top_left_position.to_int + map->K_outer_park_area + k;
+
+        forests_count += map->forests_map_count[right_park] - map->forests_map_count[left_park];
+    }
+
+    if (forests_count > max_trees_count) max_trees_count = forests_count;
+    park->forests_count = forests_count;
 }
