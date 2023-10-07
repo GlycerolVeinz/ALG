@@ -28,8 +28,7 @@ struct map {
 };
 
 struct COORD {
-    int x{}, y{};
-    int width{};
+    int x{}, y{}, width{};
     int to_int = y * width + x;
 };
 
@@ -41,9 +40,9 @@ struct park {
 };
 
 park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j);
-void count_trees_in_park(park *park, map *map, int &max_trees_count);
+void count_forests_in_park(park *park, map *map, int &max_trees_count);
 map read_input();
-void calculate_partial_summs(map *map, int tile, int forests_summ, int mountains_summ);
+void calculate_partial_summs(map *map, int tile, int &forests_summ, int &mountains_summ);
 
 
 #endif //HW01_H
