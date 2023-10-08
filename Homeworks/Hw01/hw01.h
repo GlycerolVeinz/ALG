@@ -27,21 +27,32 @@ struct map {
     std::vector<int> forests_map_count;
 };
 
+// coordinates structure, made purely for authors convenience, can be easily rewritten without it
 struct COORD {
     int x{}, y{}, width{};
     int to_int = y * width + x;
 };
 
+// park structure, shouldn't be saved in to map structure for avoiding confusion
 struct park {
     COORD top_left_position{};
-    bool is_optimal = false;
     bool is_viable = false;
     int forests_count = 0;
 };
 
+//Function declarations ================================================================================================
+
+// Function - add_viable_parks - checks mountains in a possible park location, returns park structure
+// code should only work with viable parks!!!
 park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j);
+
+// Function - count_forests_in_park - counts forests in a park, doesn't check viability!
 void count_forests_in_park(park *park, map *map, int &max_trees_count);
+
+// Function - read_input - reads input from stdin and saves it to a map structure
 map read_input();
+
+// Function - calculate_partial_summs - helps in quick calculation of items in a line
 void calculate_partial_summs(map *map, int tile, int &forests_summ, int &mountains_summ);
 
 

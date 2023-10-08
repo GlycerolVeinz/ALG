@@ -26,14 +26,6 @@ int main() {
         }
     }
 
-//    int optimal_parks_count = 0;
-//    for (park park: viable_parks) {
-//        if (park.forests_count == max_trees_count) {
-//            park.is_optimal = true;
-//            ++optimal_parks_count;
-//        }
-//    }
-
     std::cout << max_trees_count << std::endl;
 
     exit(SUCCESS);
@@ -41,6 +33,7 @@ int main() {
 // EOF main ===========================================================================================================
 
 
+// function ===========================================================================================================
 void calculate_partial_summs(map *map, int tile, int &forests_summ, int &mountains_summ) {
     switch (tile) {
         case Field:
@@ -63,6 +56,7 @@ void calculate_partial_summs(map *map, int tile, int &forests_summ, int &mountai
     }
 }
 
+// function ===========================================================================================================
 map read_input() {
     int N_whole_area, K_outer_park_area, L_inner_park_area_gap, S_minimal_mountain_count;
     std::cin >> N_whole_area >> K_outer_park_area >> L_inner_park_area_gap >> S_minimal_mountain_count;
@@ -88,6 +82,7 @@ map read_input() {
     return park;
 }
 
+// function ===========================================================================================================
 park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j) {
     bool is_viable = false;
     COORD inner_top_left_corner = {j + map->L_inner_park_area_gap, i + map->L_inner_park_area_gap, map->N_whole_area};
@@ -109,20 +104,22 @@ park add_viable_parks(map *map, std::vector<park> *viable_parks, int i, int j) {
     }
 
     COORD top_left_corner = {j, i};
-    park park = {top_left_corner, false, is_viable, 0};
+    park park = {top_left_corner, is_viable, 0};
     viable_parks->push_back(park);
 
     return park;
 }
 
+// function ===========================================================================================================
 void count_forests_in_park(park *park, map *map, int &max_trees_count) {
     int forests_count = 0;
 
     for (int k = 0; k < map->K_outer_park_area; ++k) {
-        int left_park = park->top_left_position.to_int + k;
-        int right_park = park->top_left_position.to_int + map->K_outer_park_area + k;
+        int next_row = k * map->N_whole_area;
+        int left_park = park->top_left_position.to_int + next_row;
+        int right_park = park->top_left_position.to_int + map->K_outer_park_area + next_row;
 
-        forests_count += map->forests_map_count[right_park] - map->forests_map_count[left_park];
+        forests_count += map->forests_map_count[right_park] - map->forests_map_count[left_park - 1];
     }
 
     if (forests_count > max_trees_count) max_trees_count = forests_count;
