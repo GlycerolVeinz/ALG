@@ -5,14 +5,15 @@
 #include "Storage.h"
 
 // ROOM CLASS ==========================================================================================================
-Room::Room(int id, int transportTime, Room *previous) {
-this->Id = id;
+Room::Room(int id, int transportTime){
+    this->Id = id;
     this->transportTime = transportTime;
     this->curWeight = 0;
-    this->previous = previous;
+    this->previous = nullptr;
     this->left = nullptr;
     this->right = nullptr;
 }
+
 
 int Room::getId() const {
     return Id;
@@ -67,16 +68,41 @@ void Room::setCurWeight(int cW) {
     Room::curWeight = cW;
 }
 
-
 // STORAGE CLASS =======================================================================================================
-Storage::Storage(Room mainRoom) {
-    this->mainRoom = &mainRoom;
+Storage::Storage(Room *mainRoom) {
+    this->mainRoom = mainRoom;
+    this->totalWeight = 0;
+    this->allRooms.push_back(mainRoom);
 }
 
 Room *Storage::getMainRoom() const {
     return mainRoom;
 }
 
-void Storage::setMainRoom(Room *mainRoom) {
-    Storage::mainRoom = mainRoom;
+void Storage::setMainRoom(Room *mRoom) {
+    Storage::mainRoom = mRoom;
+}
+
+void Storage::makeConnection(int parentId, int childId, int transportTime) {
+    Room *parent = allRooms.at(parentId);
+
+    Room child = createRoom(childId, transportTime);
+    child.previous = parent;
+
+    if(parent->left == nullptr){
+        parent->left = &child;
+    } else {
+        parent->right = &child;
+    }
+
+    allRooms.push_back(&child);
+}
+
+Room Storage::createRoom(int id, int transportTime) {
+    Room room(id, transportTime);
+    return room;
+}
+
+const std::vector<Room *> &Storage::getAllRooms() const {
+    return allRooms;
 }

@@ -6,21 +6,27 @@
 #define HW02_STORAGE_H
 
 #include <vector>
+#include <queue>
 
 class Room;
 
 class Storage {
 private:
     Room *mainRoom;
+    std::vector<Room *> allRooms;
 
     int totalWeight;
 
 public:
-    Storage(Room mainRoom);
+    static Room createRoom(int id, int transportTime);
+
+    explicit Storage(Room *);
+    void makeConnection(int parentId, int childId, int transportTime);
 
     Room *getMainRoom() const;
-
     void setMainRoom(Room *mainRoom);
+
+    const std::vector<Room *> &getAllRooms() const;
 };
 
 class Room {
@@ -36,8 +42,9 @@ private:
     int transportTime;
     int curWeight;
 
+    Room(int id, int transportTime);
 public:
-    Room(int id, int transportTime, Room *previous);
+    friend class Storage;
 
     int getId() const;
 
