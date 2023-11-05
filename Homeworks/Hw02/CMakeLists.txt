@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(Hw02
         ExplosiveStorage.cpp
-        Storage.h)
+        Storage.h
+        Storage.cpp)
