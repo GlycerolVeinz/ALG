@@ -2,12 +2,14 @@
 // Created by glycerolveinz on 5.11.23.
 //
 
+#include <algorithm>
 #include "Storage.h"
 
 // ROOM CLASS ==========================================================================================================
 Room::Room(int id, int transportTime){
     this->Id = id;
     this->transportTime = transportTime;
+    this->totalTime = transportTime;
     this->curWeight = 0;
     this->previous = nullptr;
     this->left = nullptr;
@@ -19,8 +21,8 @@ int Room::getId() const {
     return Id;
 }
 
-const std::vector<int> &Room::getBoxes() const {
-    return boxes;
+const std::vector<int> &Room::getPackages(){
+    return packages;
 }
 
 Room *Room::getPrevious() const {
@@ -68,6 +70,41 @@ void Room::setCurWeight(int cW) {
     Room::curWeight = cW;
 }
 
+void Room::placePackage(int weight) {
+    this->packages.push_back(weight);
+    this->curWeight += weight;
+}
+
+bool Room::isLeaf() {
+    return (this->left == nullptr) && (this->right == nullptr);
+}
+
+bool Room::willBlock() {
+    bool ret = false;
+    if (this->left != nullptr){
+        ret = this->left->getCurWeight() == 0;
+    }
+    if (this->right != nullptr){
+        ret = this->right->getCurWeight() == 0;
+    }
+
+    return ret;
+}
+
+void Room::removePackage(int weight) {
+    this->curWeight -= weight;
+    std::remove(packages.begin(), packages.end(), weight);
+}
+
+int Room::getTotalTime() const {
+    return totalTime;
+}
+
+void Room::setTotalTime(int total) {
+    Room::totalTime = total;
+}
+
+
 // STORAGE CLASS =======================================================================================================
 Storage::Storage(Room *mainRoom) {
     this->mainRoom = mainRoom;
@@ -96,6 +133,7 @@ void Storage::makeConnection(int parentId, int childId, int transportTime) {
     }
 
     allRooms.push_back(&child);
+    child.totalTime += parent->totalTime;
 }
 
 Room Storage::createRoom(int id, int transportTime) {
@@ -106,3 +144,25 @@ Room Storage::createRoom(int id, int transportTime) {
 const std::vector<Room *> &Storage::getAllRooms() const {
     return allRooms;
 }
+
+int Storage::calculateWeight(Room *parent, Room *child) {
+    int weight = INVALID_ROOM_IN_CALCULATION;
+
+    if(parent != nullptr && child != nullptr){
+        weight = std::abs(parent->getCurWeight() - child->getCurWeight());
+        child->setCurWeight(weight);
+        this->totalWeight += weight;
+    }
+
+    return weight;
+}
+
+std::vector<int> Storage::getPackages(){
+    return packages;
+}
+
+void Storage::setPackages(const std::vector<int> &packages) {
+    Storage::packages = packages;
+}
+
+

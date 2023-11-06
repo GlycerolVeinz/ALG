@@ -7,5 +7,5 @@ add_executable(Hw02
         ExplosiveStorage.cpp
         Storage.h
         Storage.cpp
-        initStorage.h
-        initStorage.cpp)
+        storageUtils.h
+        storageUtils.cpp)
