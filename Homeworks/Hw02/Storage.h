@@ -7,11 +7,16 @@
 
 #include <vector>
 #include <cmath>
+#include <algorithm>
+
 
 class Room;
 
 class Storage {
 private:
+//  first: weight second: time
+    std::pair<int, int> bestPackageDelivery;
+
     Room *mainRoom;
     std::vector<Room *> allRooms;
 
@@ -27,8 +32,11 @@ public:
     explicit Storage(Room *);
     void makeConnection(int parentId, int childId, int transportTime);
 
-    Room *getMainRoom() const;
+    Room *getMainRoom();
     void setMainRoom(Room *mainRoom);
+
+    std::pair<int, int> &getBestPackageDelivery();
+
 
     std::vector<int> getPackages();
     void setPackages(const std::vector<int> &packages);

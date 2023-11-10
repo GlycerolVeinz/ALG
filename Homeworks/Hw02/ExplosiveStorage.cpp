@@ -7,8 +7,8 @@
 
 int main() {
     Storage explosiveStorage = readInput();
-
-
+    recursivePlace(&explosiveStorage, 0, 0);
+    printResult(&explosiveStorage);
 
     return 0;
 }

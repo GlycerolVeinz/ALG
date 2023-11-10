@@ -9,10 +9,15 @@
 #include <vector>
 #include <iostream>
 
+using std::cin;
+using std::cout;
+using std::endl;
+
 Storage readInput();
 std::vector<int> readPackages(int boxesCount);
 Storage readRooms(int numberOfRooms, std::vector<int> packages);
 
-std::pair<int, int> findBestPackageDelivery(Storage *storage);
+void recursivePlace(Storage *storage, int curPackageId, int curTime);
+void printResult (Storage *storage);
 
 #endif //HW02_STORAGEUTILS_H

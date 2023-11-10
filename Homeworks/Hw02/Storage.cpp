@@ -2,7 +2,7 @@
 // Created by glycerolveinz on 5.11.23.
 //
 
-#include <algorithm>
+
 #include "Storage.h"
 
 // ROOM CLASS ==========================================================================================================
@@ -93,7 +93,7 @@ bool Room::willBlock() {
 
 void Room::removePackage(int weight) {
     this->curWeight -= weight;
-    std::remove(packages.begin(), packages.end(), weight);
+    packages.erase(std::remove(packages.begin(), packages.end(), weight), packages.end());
 }
 
 int Room::getTotalTime() const {
@@ -106,13 +106,20 @@ void Room::setTotalTime(int total) {
 
 
 // STORAGE CLASS =======================================================================================================
+int maxIntValue(){
+    double sizeInBits = sizeof(int) * 8;
+    return static_cast<int>(std::pow(2, sizeInBits - 1) - 1);
+}
+
 Storage::Storage(Room *mainRoom) {
     this->mainRoom = mainRoom;
     this->totalWeight = 0;
     this->allRooms.push_back(mainRoom);
+    this->bestPackageDelivery.first = maxIntValue();
+    this->bestPackageDelivery.second = maxIntValue();
 }
 
-Room *Storage::getMainRoom() const {
+Room *Storage::getMainRoom(){
     return mainRoom;
 }
 
@@ -161,8 +168,12 @@ std::vector<int> Storage::getPackages(){
     return packages;
 }
 
-void Storage::setPackages(const std::vector<int> &packages) {
-    Storage::packages = packages;
+void Storage::setPackages(const std::vector<int> &pack) {
+    Storage::packages = pack;
+}
+
+std::pair<int, int> &Storage::getBestPackageDelivery(){
+    return bestPackageDelivery;
 }
 
 
