@@ -69,7 +69,7 @@ void recursivePlace(Storage *storage, int curPackageId, int curTime){
 
             curRoom->placePackage(curPackage);
             curTime += curRoom->totalTime;
-            if (storage->calculateWeight(curRoom, curRoom->previous) == -1){
+            if (storage->calculateWeight(curRoom->previous, curRoom) == -1){
                 throw std::invalid_argument("ERROR: Invalid rooms");
             }
 

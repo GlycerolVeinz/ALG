@@ -25,6 +25,7 @@ public class Storage {
     public void makeConnection(Integer parentId, Integer childId, Integer transportTime){
         Room parent = this.allRooms.get(parentId);
         Room child = new Room(childId, transportTime);
+        child.isViable = false;
         child.setPrevious(parent);
         child.setTotalTime(parent.getTotalTime() + transportTime);
 
@@ -37,15 +38,17 @@ public class Storage {
         this.allRooms.add(child);
     }
 
+    public boolean checkVariant(){
+        return allRooms.get(0).getCurrentWeight() == 9
+                && allRooms.get(1).getCurrentWeight() == 8
+                && allRooms.get(2).getCurrentWeight() == 33
+                && allRooms.get(3).getCurrentWeight() == 6
+                && allRooms.get(4).getCurrentWeight() == 7
+                && allRooms.get(5).getCurrentWeight() == 33;
+    }
+
     public Integer calculateWeight(Room parent, Room child){
-        int weight = -1;
-
-        if(parent != null && child != null){
-            weight = abs(parent.getCurrentWeight() - child.getCurrentWeight());
-            this.totalWeight += weight;
-        }
-
-        return weight;
+        return abs(parent.getCurrentWeight() - child.getCurrentWeight());
     }
 
     public Integer getBestPackageWeight() {

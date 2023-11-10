@@ -3,30 +3,41 @@ import java.util.List;
 
 public class Room {
     private final Integer Id;
-    private List<Integer> packages;
     private Room previous;
     private Room left;
     private Room right;
     private final Integer transportTime;
     private Integer totalTime;
     private Integer currentWeight;
+    public boolean isViable;
 
     Room(Integer Id, Integer transportTime) {
         this.Id = Id;
         this.transportTime = transportTime;
-        this.packages = new ArrayList<>();
         this.totalTime = 0;
         this.currentWeight = 0;
     }
 
     public void placePackage(Integer packageWeight) {
-        this.packages.add(packageWeight);
         this.currentWeight += packageWeight;
+        if (this.left != null){
+            this.left.isViable = false;
+        }
+        if (this.right != null){
+            this.right.isViable = false;
+        }
     }
 
     public void removePackage(Integer packageWeight) {
-        this.packages.remove(packageWeight);
         this.currentWeight -= packageWeight;
+        if (this.currentWeight == 0){
+            if (this.left != null){
+                this.left.isViable = true;
+            }
+            if (this.right != null){
+                this.right.isViable = true;
+            }
+        }
     }
 
     boolean isLeaf() {
@@ -63,6 +74,10 @@ public class Room {
 
     public Integer getCurrentWeight() {
         return currentWeight;
+    }
+
+    public Integer getId() {
+        return Id;
     }
 
     public Integer getTotalTime() {

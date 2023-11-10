@@ -50,13 +50,17 @@ public class ExplosiveStorage {
     }
 
     public static void recursivePlace(Storage storage, int currentPackageId, int currentTime){
-        if ((currentPackageId + 1) == storage.getPackages().size()){
+        if ((currentPackageId) == storage.getPackages().size()){
             Integer totalWeight = 0;
             Integer totalTime = currentTime;
 
             for (Room currentRoom : storage.getAllRooms()){
-                totalWeight += currentRoom.getCurrentWeight();
+                if (currentRoom.getId() == 0) continue;
+
+                totalWeight += storage.calculateWeight(currentRoom.getPrevious(), currentRoom);
             }
+
+            if(storage.checkVariant()) System.out.println("You checked it");
 
             if (totalWeight < storage.getBestPackageWeight()){
                 storage.setBestPackageWeight(totalWeight);
@@ -66,24 +70,18 @@ public class ExplosiveStorage {
                     storage.setBestPackageTime(totalTime);
                 }
             }
-
         } else {
             int currentPackage = storage.getPackages().get(currentPackageId);
 
             for (Room currentRoom : storage.getAllRooms()){
-                if(!currentRoom.isLeaf() || currentRoom.willBlock()) continue;
+//                if(!currentRoom.isLeaf() || currentRoom.willBlock()) continue;
 
                 currentRoom.placePackage(currentPackage);
                 currentTime += currentRoom.getTotalTime();
 
-                if (storage.calculateWeight(currentRoom.getPrevious(), currentRoom) == -1){
-                    throw new IllegalArgumentException("You are stupid to check null");
-                }
-
-                recursivePlace(storage, ++currentPackageId, currentTime);
+                recursivePlace(storage, currentPackageId + 1, currentTime);
 
                 currentRoom.removePackage(currentPackage);
-                --currentPackageId;
             }
         }
     }
