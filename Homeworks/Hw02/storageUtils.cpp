@@ -4,6 +4,8 @@
 
 #include "storageUtils.h"
 
+#include <utility>
+
 Storage readInput(){
     int numberOfRooms, boxesCount;
 
@@ -28,45 +30,46 @@ Storage readRooms(int numberOfRooms, std::vector<int> packages){
     Room mainRoom = Storage::createRoom(0, 0);
 
     Storage storage(&mainRoom);
+
+    int parent, child, transportTime;
     for (int i = 0; i < numberOfRooms - 1; ++i) {
-        int parent, child, transportTime;
         cin >> parent >> child >> transportTime;
         storage.makeConnection(parent, child, transportTime);
     }
 
-    storage.setPackages(packages);
+    storage.packages = std::move(packages);
 
     return storage;
 }
 
 void recursivePlace(Storage *storage, int curPackageId, int curTime){
-    if (curPackageId + 1 == storage->getPackages().size()){
+    if (curPackageId + 1 == storage->packages.size()){
         int totalWeight = 0;
         int totalTime = curTime;
 
-        for (auto curRoom : storage->getAllRooms()){
-            totalWeight += curRoom->getCurWeight();
+        for (auto curRoom : storage->allRooms){
+            totalWeight += curRoom->curWeight;
         }
 
-        if (totalWeight < storage->getBestPackageDelivery().first){
-            storage->getBestPackageDelivery().first = totalWeight;
-            storage->getBestPackageDelivery().second = totalTime;
+        if (totalWeight < storage->bestPackageDelivery.first){
+            storage->bestPackageDelivery.first = totalWeight;
+            storage->bestPackageDelivery.second = totalTime;
         }
-        else if (totalWeight == storage->getBestPackageDelivery().first){
-            if (totalTime < storage->getBestPackageDelivery().second){
-                storage->getBestPackageDelivery().second = totalTime;
+        else if (totalWeight == storage->bestPackageDelivery.first){
+            if (totalTime < storage->bestPackageDelivery.second){
+                storage->bestPackageDelivery.second = totalTime;
             }
         }
     }
     else{
-        int curPackage = storage->getPackages().at(curPackageId);
+        int curPackage = storage->packages.at(curPackageId);
 
-        for (auto curRoom : storage->getAllRooms()) {
+        for (auto curRoom : storage->allRooms) {
             if(!curRoom->isLeaf() || curRoom->willBlock()) continue;
 
             curRoom->placePackage(curPackage);
-            curTime += curRoom->getTotalTime();
-            if (storage->calculateWeight(curRoom, curRoom->getPrevious()) == -1){
+            curTime += curRoom->totalTime;
+            if (storage->calculateWeight(curRoom, curRoom->previous) == -1){
                 throw std::invalid_argument("ERROR: Invalid rooms");
             }
 
@@ -80,5 +83,5 @@ void recursivePlace(Storage *storage, int curPackageId, int curTime){
 }
 
 void printResult(Storage *storage){
-    cout << storage->getBestPackageDelivery().first << " " << storage->getBestPackageDelivery().second << endl;
+    cout << storage->bestPackageDelivery.first << " " << storage->bestPackageDelivery.second << endl;
 }
