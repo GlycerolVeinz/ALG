@@ -6,8 +6,8 @@
 
 int main() {
 
-    GameField gameField = readGameField();
-    int result = findPath(&gameField);
+    GameField *gameField = readGameField();
+    int result = findPath(gameField);
 
 
     return 0;

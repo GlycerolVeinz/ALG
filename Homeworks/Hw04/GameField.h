@@ -12,6 +12,7 @@
 using std::cout;
 using std::cin;
 
+#define MAX_COLOR_COUNT 10
 
 typedef struct{
     int x;
@@ -19,8 +20,8 @@ typedef struct{
 } Coord;
 
 typedef struct {
-    Coord currentCoord;
-    Coord goalCoord;
+    Coord *currentCoord;
+    Coord *goalCoord;
     int curKey;
 } Joe;
 
@@ -31,13 +32,13 @@ typedef struct{
 } DStarLiteValues;
 
 typedef struct {
-    Coord coord;
+    Coord *coord;
     int color;
 
     bool isWalkable;
     bool isKey;
 
-    DStarLiteValues algValues;
+    DStarLiteValues *algValues;
 } Tile;
 
 typedef struct {
@@ -45,30 +46,32 @@ typedef struct {
     int height;
     int colorCount;
 
-    std::vector<std::vector<Tile>> coloredTiles;
-    std::vector<Tile> allTiles;
-
-    Joe joe;
+    std::vector<std::vector<Tile *>> *allTiles;
+    Joe *joe;
 } GameField;
 
-GameField readGameField();
+/*
+ * Reads the game field from the input stream.
+ * Returns the game field struct allocated.
+ */
+GameField *readGameField();
 
 /*
  * Checks if the given coordinates are equal.
  */
-bool areEqualCoords(Coord coord1, Coord coord2);
+bool areEqualCoords(Coord *coord1, Coord *coord2);
 
 /*
  * Calculates the heuristic for the given tile.
  * The heuristic is the manhattan distance between the tile and the goal.
  */
-int calculateHeuristic(Tile *tile, GameField *gameField);
+int calculateHeuristic(GameField *gameField, Tile *tile);
 
 /*
  * Initializes a tile with the given x and y coordinates
  * and the color, that it reads from the input stream.
  */
-void initTile(Tile *tile, int x, int y);
+Tile *initTile(int x, int y, int color);
 
 /*
  * Initializes the Joe struct with the given maxX and maxY values,
@@ -80,13 +83,13 @@ void initJoe(GameField *gameField, int maxX, int maxY);
  * Initializes the gameField and its main attributes.
  * Also initializes Joe, and prepares colorTiles vector.
  * */
-void initGameField(GameField *gameField, int maxY, int maxX, int c);
+GameField *initGameField(int maxY, int maxX, int c);
 
 /*
  * Adds the given tile to the coloredTiles vector,
  * sets is walkable and is key.
  */
-void addTileToColoredTiles(Tile tile, GameField *gameField);
+void addTileToColoredTiles(GameField *gameField, Tile *tile, int curCol);
 
 
 #endif //HW04_GAMEFIELD_H
