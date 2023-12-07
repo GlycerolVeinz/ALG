@@ -25,6 +25,19 @@ GameField *readGameField() {
     return gameField;
 }
 
+bool isOutOfBounds(GameField *gameField, Coord *coord) {
+    return (coord->x < 0 || coord->x >= gameField->width ||
+            coord->y < 0 || coord->y >= gameField->height);
+}
+
+int coordToIndex(GameField *gameField, Coord *coord) {
+    return (coord->x + coord->y * gameField->width);
+}
+
+Tile *getTile(GameField *gameField, Coord *coord, int color) {
+    return gameField->allTiles->at(color).at(coordToIndex(gameField, coord));
+}
+
 bool areEqualCoords(Coord *coord1, Coord *coord2) {
     return (coord1->x == coord2->x && coord1->y == coord2->y);
 }
@@ -61,12 +74,14 @@ void initJoe(GameField *gameField, int maxX, int maxY) {
     auto joe = new Joe;
     auto currentCoord = new Coord;
     auto goalCoord = new Coord;
+
     joe->currentCoord = currentCoord;
     joe->goalCoord = goalCoord;
 
     joe->curKey = 0;
     joe->currentCoord->x = 0;
     joe->currentCoord->y = maxY - 1;
+
     joe->goalCoord->x = maxX - 1;
     joe->goalCoord->y = 0;
     gameField->joe = joe;
@@ -96,6 +111,7 @@ void addTileToColoredTiles(GameField *gameField, Tile *tile, int curCol) {
         tile->isWalkable = false;
     }
 
+    tile->wasVisited = false;
     gameField->allTiles->at(curCol).push_back(tile);
 }
 

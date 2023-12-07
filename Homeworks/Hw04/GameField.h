@@ -37,6 +37,7 @@ typedef struct {
 
     bool isWalkable;
     bool isKey;
+    bool wasVisited;
 
     DStarLiteValues *algValues;
 } Tile;
@@ -49,6 +50,18 @@ typedef struct {
     std::vector<std::vector<Tile *>> *allTiles;
     Joe *joe;
 } GameField;
+
+bool isOutOfBounds(GameField *gameField, Coord *coord);
+
+/*
+ * Translates the given coordinates to the index in the allTiles vector.
+ */
+int coordToIndex(GameField *gameField, Coord *coord);
+
+/*
+ * Returns the tile at the given coordinates and color.
+ */
+Tile *getTile(GameField *gameField, Coord *coord, int color);
 
 /*
  * Reads the game field from the input stream.
