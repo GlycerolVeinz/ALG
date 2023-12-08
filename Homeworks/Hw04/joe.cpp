@@ -13,7 +13,7 @@ void printGameField(GameField *gameField) {
                 Coord coord;
                 coord.x = x;
                 coord.y = y;
-                Tile *tile = getTile(gameField, &coord, col);
+                Tile *tile = getTile(gameField, coord, col);
 
                 if (tile->isKey) {
                     cout << tile->color << " ";
@@ -23,38 +23,38 @@ void printGameField(GameField *gameField) {
                     cout << "# ";
                 }
             }
-            cout << std::endl;
+            cout << "\n";
         }
     }
+    cout << std::endl;
 }
 
 int main() {
 
-    GameField *gameField = readGameField();
-//    printGameField(gameField);
+    GameField gameField = readGameField();
+//    printGameField(&gameField);
 
-    int result = findPath(gameField);
+    int result = findPath(&gameField);
     cout << result << std::endl;
 
-    freeGameField(gameField);
     return 0;
 }
 
 int findPath(GameField *gameField) {
 //  find path using BFS algorithm
 
-    Coord *startCoord = gameField->joe->currentCoord;
-    Coord *goalCoord = gameField->joe->goalCoord;
-    auto startTile = getTile(gameField, startCoord, gameField->joe->curKey);
+    Coord startCoord = gameField->joe.currentCoord;
+    Coord goalCoord = gameField->joe.goalCoord;
+    auto startTile = getTile(gameField, startCoord, gameField->joe.curKey);
+    startTile->algValues.gCost = 0;
 
-    auto *queue = new std::priority_queue<Tile *, std::vector<Tile *>, TileComparator>;
-
-    queue->push(startTile);
+    std::priority_queue<Tile *, std::vector<Tile *>, TileComparator> queue;
+    queue.push(startTile);
 
     Tile *currentTile;
-    while (!queue->empty()) {
-        currentTile = queue->top();
-        queue->pop();
+    while (!queue.empty()) {
+        currentTile = queue.top();
+        queue.pop();
 
 //        END of algorithm
         if (areEqualCoords(currentTile->coord, goalCoord)){
@@ -72,18 +72,18 @@ int findPath(GameField *gameField) {
                 neighbourTile = getTile(gameField, neighbourTile->coord, neighbourTile->color);
             }
 
-            neighbourTile->algValues->gCost = currentTile->algValues->gCost + 1;
-            queue->push(neighbourTile);
+            neighbourTile->algValues.gCost = currentTile->algValues.gCost + 1;
+            queue.push(neighbourTile);
         }
     }
 
-    int pathLength = currentTile->algValues->gCost;
+    int pathLength = currentTile->algValues.gCost;
     return pathLength;
 }
 
 void printMove(Tile *from, Tile *to){
-    cout << "Current: " << from->coord->x << " " << from->coord->y << " " << from->colorPlain;
+    cout << "Current: " << from->coord.x << " " << from->coord.y << " " << from->colorPlain;
     cout << " -> ";
-    cout << "Next: " << to->coord->x << " " << to->coord->y << " " << to->colorPlain << "\n";
+    cout << "Next: " << to->coord.x << " " << to->coord.y << " " << to->colorPlain << "\n";
 }
 

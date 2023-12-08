@@ -18,8 +18,8 @@ typedef struct{
 } Coord;
 
 typedef struct {
-    Coord *currentCoord;
-    Coord *goalCoord;
+    Coord currentCoord;
+    Coord goalCoord;
     int curKey;
 } Joe;
 
@@ -30,7 +30,7 @@ typedef struct{
 } AlgValues;
 
 typedef struct {
-    Coord *coord;
+    Coord coord;
     int color;
     int colorPlain;
 
@@ -39,7 +39,7 @@ typedef struct {
     bool wasVisited;
 
 //    int gCost;
-    AlgValues *algValues;
+    AlgValues algValues;
 } Tile;
 
 typedef struct {
@@ -47,8 +47,8 @@ typedef struct {
     int height;
     int colorCount;
 
-    std::vector<std::vector<Tile *>> *allTiles;
-    Joe *joe;
+    std::vector<std::vector<Tile>> allTiles;
+    Joe joe;
 } GameField;
 
 #define UP_NEIGHBOUR {0, -1}
@@ -59,7 +59,7 @@ typedef struct {
 /*
  * Gets the neighbour of the given tile in the given direction.
  * */
-Tile *getNeighbour(GameField *gameField, Tile* tile, Coord delta);
+Tile *getNeighbour(GameField *gameField, Tile *tile, Coord delta);
 
 /*
  * Gets all neighbours of the given tile.
@@ -69,28 +69,28 @@ std::vector<Tile *> getNeighbours(GameField *gameField, Tile *tile);
 /*
  * Checks if the given coordinates are out of bounds.
  */
-bool isOutOfBounds(GameField *gameField, Coord *coord);
+bool isOutOfBounds(GameField *gameField, Coord coord);
 
 /*
  * Translates the given coordinates to the index in the allTiles vector.
  */
-int coordToIndex(GameField *gameField, Coord *coord);
+int coordToIndex(GameField *gameField, Coord coord);
 
 /*
  * Returns the tile at the given coordinates and color.
  */
-Tile *getTile(GameField *gameField, Coord *coord, int color);
+Tile *getTile(GameField *gameField, Coord coord, int color);
 
 /*
  * Reads the game field from the input stream.
  * Returns the game field struct allocated.
  */
-GameField *readGameField();
+GameField readGameField();
 
 /*
  * Checks if the given coordinates are equal.
  */
-bool areEqualCoords(Coord *coord1, Coord *coord2);
+bool areEqualCoords(Coord coord1, Coord coord2);
 
 /*
  * Calculates the heuristic for the given tile.
@@ -103,29 +103,25 @@ int calculateHeuristic(GameField *gameField, Tile *tile);
  * Initializes a tile with the given x and y coordinates
  * and the color, that it reads from the input stream.
  */
-Tile *initTile(int x, int y, int color);
+Tile initTile(int x, int y, int color);
 
 /*
  * Initializes the Joe struct with the given maxX and maxY values,
  * puts him on start position and sets the goal position.
  */
-void initJoe(GameField *gameField, int maxX, int maxY);
+Joe initJoe(int maxX, int maxY);
 
 /*
  * Initializes the gameField and its main attributes.
  * Also initializes Joe, and prepares colorTiles vector.
  * */
-GameField *initGameField(int maxY, int maxX, int c);
+GameField initGameField(int maxY, int maxX, int c);
 
 /*
  * Adds the given tile to the coloredTiles vector,
  * sets is walkable and is key.
  */
-void addTileToColoredTiles(GameField *gameField, Tile *tile, int curCol);
+void addTileToColoredTiles(GameField *gameField, Tile tile, int curCol);
 
-/*
- * frees memory allocated for the gameField
- * */
-void freeGameField(GameField *gameField);
 
 #endif //HW04_GAMEFIELD_H
