@@ -1,97 +1,62 @@
-from queue import Queue
+from collections import deque
+from typing import List, Tuple
 
-# Function to initialize the start state
-def initialize_start_state(game_state):
-    for i in range(len(game_state)):
-        for j in range(len(game_state[0])):
-            if game_state[i][j] == 0:
-                return {
-                    'position': (i, j),
-                    'game_state': tuple(tuple(row) for row in game_state),
-                    'moves': 0
-                }
+def findShortestPath(maze: List[List[int]]) -> int:
+    num_rows, num_cols = len(maze), len(maze[0])
+    directions = [(0, -1), (-1, 0), (0, 1), (1, 0)] # Left, Up, Right, Down
 
-# Function to check if the current state is the destination state
-def is_destination_state(current_state, M, N):
-    row, col = current_state['position']
-    return row == 0 and col == N - 1
+    # Step 1: Create a copy of the playing field
+    field_copy = [[maze[i][j] for j in range(num_cols)] for i in range(num_rows)]
 
-# Function to generate possible moves from the current state
-def generate_moves(current_state):
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    next_states = []
+    # Step 2: Start BFS traversal from the top left corner
+    queue = deque([(num_rows - 1, num_cols - 1, 0)]) # (row, col, steps)
+    visited = set((num_rows - 1, num_cols - 1, 0))
+    while queue:
+        row, col, steps = queue.popleft()
 
-    for direction in directions:
-        new_state = move_tom(current_state, direction)
-        if new_state:
-            next_states.append(new_state)
+        # If reached the bottom right corner, return the number of steps
+        if row == 0 and col == 0:
+            return steps
 
-    return next_states
+        # Check the neighbours
+        for dr, dc in directions:
+            nr, nc = row + dr, col + dc
+            if 0 <= nr < num_rows and 0 <= nc < num_cols and field_copy[nr][nc] != 1:
+                # Step 3: Perform a BFS traversal for each colour
+                if field_copy[nr][nc] == 2: # Pressure plate
+                    # Step 4: Update the walls and the pressure plates
+                    queue.append((nr, nc, steps + 1))
+                    visited.add((nr, nc, steps + 1))
+                    field_copy[nr][nc] = 0
+                else:
+                    # Step 5: Continue the BFS traversal
+                    queue.append((nr, nc, steps + 1))
+                    visited.add((nr, nc, steps + 1))
 
-# Function to move Tom in a given direction and update the game state
-def move_tom(current_state, direction):
-    row, col = current_state['position']
-    dr, dc = direction
-    new_row, new_col = row + dr, col + dc
-
-    if 0 <= new_row < len(current_state['game_state']) and 0 <= new_col < len(current_state['game_state'][0]):
-        cell_value = current_state['game_state'][new_row][new_col]
-
-        new_game_state = [list(row) for row in current_state['game_state']]
-        new_game_state[row][col] = 0
-        new_game_state[new_row][new_col] = 1
-
-        if cell_value < 0:
-            switch_color = abs(cell_value)
-            switch_walls(new_game_state, switch_color)
-
-        return {
-            'position': (new_row, new_col),
-            'game_state': tuple(tuple(row) for row in new_game_state),
-            'moves': current_state['moves'] + 1
-        }
-
-    return None
-
-# Function to switch walls based on the color of the switch
-def switch_walls(game_state, switch_color):
-    for i in range(len(game_state)):
-        for j in range(len(game_state[0])):
-            if game_state[i][j] == switch_color:
-                game_state[i][j] *= -1
-
-# Main BFS function
-def bfs(start_state, M, N):
-    queue = Queue()
-    queue.put(start_state)
-    visited_positions = set()
-
-    while not queue.empty():
-        current_state = queue.get()
-        row, col = current_state['position']
-
-        if (row, col) in visited_positions:
-            continue
-
-        visited_positions.add((row, col))
-
-        if is_destination_state(current_state, M, N):
-            return current_state['moves']
-
-        next_states = generate_moves(current_state)
-
-        for next_state in next_states:
-            queue.put(next_state)
-
+    # If no path is found, return -1
     return -1
 
-# Read input
-M, N, C = map(int, input().split())
-game_state = [[int(x) for x in input().split()] for _ in range(M)]
+def readInput():
+    # Initialize the array to store the maze
+    maze = []
 
-# Call BFS with the initial state
-start_state = initialize_start_state(game_state)
-result = bfs(start_state, M, N)
+    # Read the dimensions of the maze
+    dimensions = list(map(int, input().split()))
 
-# Output the result
-print(result)
+    # Create the maze array with the given dimensions
+    for _ in range(dimensions[0]):
+        maze.append([0] * dimensions[1])
+
+    # Read the maze grid from std input and store it in the array
+    for i in range(dimensions[0]):
+        maze[i] = list(map(int, input().split()))
+
+    # Return the maze array
+    return maze
+
+def main():
+    maze = readInput()
+    print(findShortestPath(maze))
+
+if __name__ == "__main__":
+    main()

@@ -10,5 +10,6 @@
 #include "GameField.h"
 
 int findPath(GameField *gameField);
+void printMove(Tile *from, Tile *to);
 
 #endif //HW04_JOE_H

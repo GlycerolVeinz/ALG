@@ -16,11 +16,11 @@ void printGameField(GameField *gameField) {
                 Tile *tile = getTile(gameField, &coord, col);
 
                 if (tile->isKey) {
-                    cout << "K ";
+                    cout << tile->color << " ";
                 } else if (tile->isWalkable) {
                     cout << "_ ";
                 } else {
-                    cout << tile->color << " ";
+                    cout << "# ";
                 }
             }
             cout << std::endl;
@@ -35,61 +35,53 @@ int main() {
 
     int result = findPath(gameField);
     cout << result << std::endl;
+
     return 0;
-}
-
-void recursiveHelper(){
-
-}
-
-int findPathRecursive(GameField *gameField){
-    Coord *currentCoord = gameField->joe->currentCoord;
-    Coord *goalCoord = gameField->joe->goalCoord;
-    int curKey = gameField->joe->curKey;
-
-    auto *queue = new std::queue<Coord *>;
-    auto *visited = new std::set<Coord *>;
-
 }
 
 int findPath(GameField *gameField) {
 //  find path using BFS algorithm
 
-    Coord *currentCoord = gameField->joe->currentCoord;
+    Coord *startCoord = gameField->joe->currentCoord;
     Coord *goalCoord = gameField->joe->goalCoord;
-    int curKey = gameField->joe->curKey;
+    auto startTile = getTile(gameField, startCoord, gameField->joe->curKey);
 
-    auto *queue = new std::queue<Coord *>;
+    auto *queue = new std::queue<Tile *>;
 
-    queue->push(currentCoord);
+    queue->push(startTile);
 
+    Tile *currentTile;
     while (!queue->empty()) {
-        Coord *current = queue->front();
+        currentTile = queue->front();
         queue->pop();
 
 //        END of algorithm
-        if (areEqualCoords(current, goalCoord)) {
+        if (areEqualCoords(currentTile->coord, goalCoord)){
+//            cout << "\nFound goal!" << std::endl;
             break;
         }
 
-        Tile *currentTile = getTile(gameField, current, curKey);
         currentTile->wasVisited = true;
 
-        for (auto neighbourCoord : getNeighbourCoords(gameField, current)) {
-            Tile *neighbourTile = getTile(gameField, neighbourCoord, curKey);
-
+        for (auto neighbourTile : getNeighbours(gameField, currentTile)) {
             if (neighbourTile->wasVisited) continue;
             if (!neighbourTile->isWalkable) continue;
+//            printMove(currentTile, neighbourTile);
             if (neighbourTile->isKey) {
-                curKey = neighbourTile->color;
-                neighbourTile = getTile(gameField, neighbourCoord, curKey);
+                neighbourTile = getTile(gameField, neighbourTile->coord, neighbourTile->color);
             }
 
-            neighbourTile->algValues->gCost = currentTile->algValues->gCost + 1;
-            queue->push(neighbourCoord);
+            neighbourTile->gCost = currentTile->gCost + 1;
+            queue->push(neighbourTile);
         }
     }
 
-    pathLength = getTile(gameField, goalCoord, curKey)->algValues->gCost;
+    int pathLength = currentTile->gCost;
     return pathLength;
+}
+
+void printMove(Tile *from, Tile *to){
+    cout << "Current: " << from->coord->x << " " << from->coord->y << " " << from->colorPlain;
+    cout << " -> ";
+    cout << "Next: " << to->coord->x << " " << to->coord->y << " " << to->colorPlain << "\n";
 }

@@ -25,32 +25,34 @@ GameField *readGameField() {
     return gameField;
 }
 
-Coord *getNeighbour(Coord *coord, Coord delta) {
-    auto up = new Coord;
-    up->x = coord->x + delta.x;
-    up->y = coord->y + delta.y;
-    return up;
+Tile *getNeighbour(GameField *gameField, Tile *tile, Coord delta) {
+    Coord neighbourCoord = {tile->coord->x + delta.x, tile->coord->y + delta.y};
+    if (isOutOfBounds(gameField, &neighbourCoord)) {
+        return nullptr;
+    }
+    Tile *neighbour = getTile(gameField, &neighbourCoord, tile->colorPlain);
+    return neighbour;
 }
 
-std::vector<Coord *> getNeighbourCoords(GameField *gameField, Coord *coord) {
-    std::vector<Coord *> neighbourCoords;
+std::vector<Tile *> getNeighbours(GameField *gameField, Tile *tile) {
+    std::vector<Tile *> neighbourCoords;
 
-    Coord *left = getNeighbour(coord, LEFT_NEIGHBOUR);
-    Coord *right = getNeighbour(coord, RIGHT_NEIGHBOUR);
-    Coord *up = getNeighbour(coord, UP_NEIGHBOUR);
-    Coord *down = getNeighbour(coord, DOWN_NEIGHBOUR);
+    Tile *left = getNeighbour(gameField, tile, LEFT_NEIGHBOUR);
+    Tile *right = getNeighbour(gameField, tile, RIGHT_NEIGHBOUR);
+    Tile *up = getNeighbour(gameField, tile, UP_NEIGHBOUR);
+    Tile *down = getNeighbour(gameField, tile, DOWN_NEIGHBOUR);
 
-    if (!isOutOfBounds(gameField, up)) {
-        neighbourCoords.push_back(up);
-    }
-    if (!isOutOfBounds(gameField, down)) {
-        neighbourCoords.push_back(down);
-    }
-    if (!isOutOfBounds(gameField, left)) {
+    if (left != nullptr) {
         neighbourCoords.push_back(left);
     }
-    if (!isOutOfBounds(gameField, right)) {
+    if (right != nullptr) {
         neighbourCoords.push_back(right);
+    }
+    if (up != nullptr) {
+        neighbourCoords.push_back(up);
+    }
+    if (down != nullptr) {
+        neighbourCoords.push_back(down);
     }
 
     return neighbourCoords;
@@ -85,18 +87,19 @@ int calculateHeuristic(GameField *gameField, Tile *tile) {
 Tile *initTile(int x, int y, int color) {
     auto tile = new Tile;
     auto coord = new Coord;
-    auto algValues = new DStarLiteValues;
+//    auto algValues = new AlgValues;
 
     tile->coord = coord;
-    tile->algValues = algValues;
+//    tile->algValues = algValues;
 
     tile->coord->x = x;
     tile->coord->y = y;
     tile->color = color;
+    tile->gCost = std::numeric_limits<int>::max();
 
-    tile->algValues->gCost = std::numeric_limits<int>::max();
-    tile->algValues->rhEstimate = std::numeric_limits<int>::max();
-    tile->algValues->heuristic = std::numeric_limits<int>::max();
+//    tile->algValues->gCost = std::numeric_limits<int>::max();
+//    tile->algValues->rhEstimate = std::numeric_limits<int>::max();
+//    tile->algValues->heuristic = std::numeric_limits<int>::max();
 
     return tile;
 }
@@ -135,7 +138,7 @@ void addTileToColoredTiles(GameField *gameField, Tile *tile, int curCol) {
     if (tile->color < 0) {
         tile->isKey = true;
         tile->isWalkable = true;
-        tile->color = abs(curCol);
+        tile->color = abs(tile->color);
     } else if (tile->color == curCol || tile->color == 0) {
         tile->isKey = false;
         tile->isWalkable = true;
@@ -144,6 +147,7 @@ void addTileToColoredTiles(GameField *gameField, Tile *tile, int curCol) {
         tile->isWalkable = false;
     }
 
+    tile->colorPlain = curCol;
     tile->wasVisited = false;
     gameField->allTiles->at(curCol).push_back(tile);
 }
