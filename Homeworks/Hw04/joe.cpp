@@ -36,6 +36,7 @@ int main() {
     int result = findPath(gameField);
     cout << result << std::endl;
 
+    freeGameField(gameField);
     return 0;
 }
 
@@ -46,13 +47,13 @@ int findPath(GameField *gameField) {
     Coord *goalCoord = gameField->joe->goalCoord;
     auto startTile = getTile(gameField, startCoord, gameField->joe->curKey);
 
-    auto *queue = new std::queue<Tile *>;
+    auto *queue = new std::priority_queue<Tile *, std::vector<Tile *>, TileComparator>;
 
     queue->push(startTile);
 
     Tile *currentTile;
     while (!queue->empty()) {
-        currentTile = queue->front();
+        currentTile = queue->top();
         queue->pop();
 
 //        END of algorithm
@@ -71,12 +72,12 @@ int findPath(GameField *gameField) {
                 neighbourTile = getTile(gameField, neighbourTile->coord, neighbourTile->color);
             }
 
-            neighbourTile->gCost = currentTile->gCost + 1;
+            neighbourTile->algValues->gCost = currentTile->algValues->gCost + 1;
             queue->push(neighbourTile);
         }
     }
 
-    int pathLength = currentTile->gCost;
+    int pathLength = currentTile->algValues->gCost;
     return pathLength;
 }
 
@@ -85,3 +86,4 @@ void printMove(Tile *from, Tile *to){
     cout << " -> ";
     cout << "Next: " << to->coord->x << " " << to->coord->y << " " << to->colorPlain << "\n";
 }
+

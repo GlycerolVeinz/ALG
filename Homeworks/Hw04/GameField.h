@@ -38,8 +38,8 @@ typedef struct {
     bool isKey;
     bool wasVisited;
 
-    int gCost;
-//    AlgValues *algValues;
+//    int gCost;
+    AlgValues *algValues;
 } Tile;
 
 typedef struct {
@@ -123,5 +123,9 @@ GameField *initGameField(int maxY, int maxX, int c);
  */
 void addTileToColoredTiles(GameField *gameField, Tile *tile, int curCol);
 
+/*
+ * frees memory allocated for the gameField
+ * */
+void freeGameField(GameField *gameField);
 
 #endif //HW04_GAMEFIELD_H

@@ -21,7 +21,7 @@ GameField *readGameField() {
         }
     }
 
-    getTile(gameField, gameField->joe->currentCoord, 0)->gCost = 0;
+    getTile(gameField, gameField->joe->currentCoord, 0)->algValues->gCost = 0;
     return gameField;
 }
 
@@ -87,19 +87,19 @@ int calculateHeuristic(GameField *gameField, Tile *tile) {
 Tile *initTile(int x, int y, int color) {
     auto tile = new Tile;
     auto coord = new Coord;
-//    auto algValues = new AlgValues;
+    auto algValues = new AlgValues;
 
     tile->coord = coord;
-//    tile->algValues = algValues;
+    tile->algValues = algValues;
 
     tile->coord->x = x;
     tile->coord->y = y;
     tile->color = color;
-    tile->gCost = std::numeric_limits<int>::max();
+//    tile->gCost = std::numeric_limits<int>::max();
 
-//    tile->algValues->gCost = std::numeric_limits<int>::max();
-//    tile->algValues->rhEstimate = std::numeric_limits<int>::max();
-//    tile->algValues->heuristic = std::numeric_limits<int>::max();
+    tile->algValues->gCost = std::numeric_limits<int>::max();
+    tile->algValues->rhEstimate = std::numeric_limits<int>::max();
+    tile->algValues->heuristic = std::numeric_limits<int>::max();
 
     return tile;
 }
@@ -152,3 +152,18 @@ void addTileToColoredTiles(GameField *gameField, Tile *tile, int curCol) {
     gameField->allTiles->at(curCol).push_back(tile);
 }
 
+
+void freeGameField(GameField *gameField) {
+    for (const auto& color : *gameField->allTiles) {
+        for (auto tile: color) {
+            delete tile->coord;
+            delete tile;
+        }
+    }
+
+    delete gameField->allTiles;
+    delete gameField->joe->currentCoord;
+    delete gameField->joe->goalCoord;
+    delete gameField->joe;
+    delete gameField;
+}
