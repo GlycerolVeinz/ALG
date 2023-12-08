@@ -51,6 +51,22 @@ typedef struct {
     Joe *joe;
 } GameField;
 
+#define UP_NEIGHBOUR {0, -1}
+#define DOWN_NEIGHBOUR {0, 1}
+#define LEFT_NEIGHBOUR {-1, 0}
+#define RIGHT_NEIGHBOUR {1, 0}
+
+/*
+ * Returns the neighbour of the given coordinates in the given direction.
+ * neighbours are UP, DOWN, LEFT, RIGHT, defined as macros.
+ */
+Coord *getNeighbour(Coord *coord, Coord delta);
+
+/*
+ * Returns the coordinates of the neighbours of the given coordinates.
+ */
+std::vector<Coord *> getNeighbourCoords(GameField *gameField, Coord *coord);
+
 bool isOutOfBounds(GameField *gameField, Coord *coord);
 
 /*

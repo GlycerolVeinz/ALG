@@ -6,6 +6,7 @@
 #define HW04_JOE_H
 
 #include <queue>
+#include <set>
 #include "GameField.h"
 
 int findPath(GameField *gameField);

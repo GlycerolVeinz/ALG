@@ -14,15 +14,46 @@ GameField *readGameField() {
         for (int x = 0; x < n; ++x) {
             int color;
             cin >> color;
-            for (int col = 0; col < c; ++col) {
+            for (int col = 0; col <= c; ++col) {
                 Tile *tile = initTile(x, y, color);
                 addTileToColoredTiles(gameField, tile, col);
-
             }
         }
     }
 
+    getTile(gameField, gameField->joe->currentCoord, 0)->algValues->gCost = 0;
     return gameField;
+}
+
+Coord *getNeighbour(Coord *coord, Coord delta) {
+    auto up = new Coord;
+    up->x = coord->x + delta.x;
+    up->y = coord->y + delta.y;
+    return up;
+}
+
+std::vector<Coord *> getNeighbourCoords(GameField *gameField, Coord *coord) {
+    std::vector<Coord *> neighbourCoords;
+
+    Coord *left = getNeighbour(coord, LEFT_NEIGHBOUR);
+    Coord *right = getNeighbour(coord, RIGHT_NEIGHBOUR);
+    Coord *up = getNeighbour(coord, UP_NEIGHBOUR);
+    Coord *down = getNeighbour(coord, DOWN_NEIGHBOUR);
+
+    if (!isOutOfBounds(gameField, up)) {
+        neighbourCoords.push_back(up);
+    }
+    if (!isOutOfBounds(gameField, down)) {
+        neighbourCoords.push_back(down);
+    }
+    if (!isOutOfBounds(gameField, left)) {
+        neighbourCoords.push_back(left);
+    }
+    if (!isOutOfBounds(gameField, right)) {
+        neighbourCoords.push_back(right);
+    }
+
+    return neighbourCoords;
 }
 
 bool isOutOfBounds(GameField *gameField, Coord *coord) {
@@ -95,6 +126,7 @@ GameField *initGameField(int maxY, int maxX, int c) {
 
     initJoe(gameField, maxX, maxY);
 
+    gameField->allTiles = new std::vector<std::vector<Tile *>>;
     gameField->allTiles->resize(c + 1);
     return gameField;
 }
@@ -103,7 +135,8 @@ void addTileToColoredTiles(GameField *gameField, Tile *tile, int curCol) {
     if (tile->color < 0) {
         tile->isKey = true;
         tile->isWalkable = true;
-    } else if (tile->color == curCol) {
+        tile->color = abs(curCol);
+    } else if (tile->color == curCol || tile->color == 0) {
         tile->isKey = false;
         tile->isWalkable = true;
     } else {
