@@ -21,7 +21,7 @@ GameField *readGameField() {
         }
     }
 
-    getTile(gameField, gameField->joe->currentCoord, 0)->algValues->gCost = 0;
+    getTile(gameField, gameField->joe->currentCoord, 0)->gCost = 0;
     return gameField;
 }
 
