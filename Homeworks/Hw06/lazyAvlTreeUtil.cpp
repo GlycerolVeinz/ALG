@@ -4,20 +4,22 @@
 
 #include "lazyAvlTreeUtil.h"
 
-void rotate(std::pair<int,int> directions, AvlTree *tree, Node *node) {
-    if (directions.first == WAS_LEFT_CHILD){
-        if (directions.second == WAS_LEFT_CHILD){
+void rotate(AvlTree *tree, Node *node) {
+    int depthDifference = node->leftTreeDepth - node->rightTreeDepth;
+    if (depthDifference > 1){
+        if (node->left->leftTreeDepth >= node->left->rightTreeDepth){
             rotateR(tree, node);
         } else {
             rotateLR(tree, node);
         }
-    } else {
-        if (directions.second == WAS_LEFT_CHILD){
-            rotateRL(tree, node);
-        } else {
+    } else if (depthDifference < -1){
+        if (node->right->rightTreeDepth >= node->right->leftTreeDepth){
             rotateL(tree, node);
+        } else {
+            rotateRL(tree, node);
         }
     }
+    ++tree->rotationsCount;
 }
 
 void rotateR(AvlTree *tree, Node *node) {
@@ -107,25 +109,32 @@ void addRoot(AvlTree *tree, Node *node) {
     tree->maxDepth = 0;
 }
 
-void recalculateDepths(AvlTree *tree, Node *node, int action){
+void recalculateDepths(AvlTree *tree, Node *node){
     Node *currentNode = node;
 
-//    also need to check for rotations
-    std::pair<int,int> previousChildrenDirection = std::make_pair(0,0);
     while (currentNode->parent != nullptr){
         if (currentNode->isLeftChild){
-            previousChildrenDirection.first = previousChildrenDirection.second;
-            previousChildrenDirection.second = WAS_LEFT_CHILD;
-            currentNode->parent->leftTreeDepth += action;
+            int leftDepth = currentNode->left == nullptr ? -1 : currentNode->left->depth - currentNode->depth;
+            int rightDepth = currentNode->right == nullptr ? -1 : currentNode->right->depth - currentNode->depth;
+            if (leftDepth == -1 && rightDepth == -1){
+                currentNode->parent->leftTreeDepth = 0;
+            } else {
+                leftDepth > rightDepth ?
+                    currentNode->parent->leftTreeDepth = leftDepth + 1 : currentNode->parent->leftTreeDepth = rightDepth + 1;
+            }
         } else {
-            previousChildrenDirection.first = previousChildrenDirection.second;
-            previousChildrenDirection.second = WAS_RIGHT_CHILD;
-            currentNode->parent->rightTreeDepth += action;
+            int leftDepth = currentNode->left == nullptr ? -1 : currentNode->left->depth - currentNode->depth;
+            int rightDepth = currentNode->right == nullptr ? -1 : currentNode->right->depth - currentNode->depth;
+            if (leftDepth == -1 && rightDepth == -1){
+                currentNode->parent->rightTreeDepth = 0;
+            } else {
+                leftDepth > rightDepth ?
+                    currentNode->parent->rightTreeDepth = leftDepth + 1 : currentNode->parent->rightTreeDepth = rightDepth + 1;
+            }
         }
         int depthDifference = currentNode->parent->leftTreeDepth - currentNode->parent->rightTreeDepth;
         if (depthDifference > 1 || depthDifference < -1){
-            rotate(previousChildrenDirection, tree, currentNode->parent);
-            ++tree->rotationsCount;
+            rotate(tree, currentNode->parent);
         }
 
         currentNode = currentNode->parent;
@@ -138,7 +147,7 @@ void recalculateDepths(AvlTree *tree, Node *node, int action){
 void addChild(AvlTree *tree, Node *parent, Node *child) {
     child->isLeftChild ? addLeftChild(parent, child) : addRightChild(parent, child);
     ++tree->size;
-    recalculateDepths(tree, child, INSERT_RECALCULATE);
+//    recalculateDepths(tree, child);
 }
 
 void addLeftChild(Node *parent, Node *child) {

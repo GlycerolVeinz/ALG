@@ -31,16 +31,11 @@ typedef struct AvlTree{
     int consolidationsCount;
 } AvlTree;
 
-#define WAS_LEFT_CHILD 1
-#define WAS_RIGHT_CHILD 2
-#define INSERT_RECALCULATE (+1)
-#define DELETE_RECALCULATE (-1)
-
 AvlTree *initTree();
 Node *initNode(int key);
 
 int maxDeletedNodesTillEnd(int currentDeletedNodesCount, Node *node);
-void recalculateDepths(AvlTree *tree, Node *node, int action);
+void recalculateDepths(AvlTree *tree, Node *node);
 
 void addRoot(AvlTree *tree, Node *node);
 void addChild(AvlTree *tree, Node *parent, Node *child);
@@ -51,7 +46,7 @@ Node *findHighestKeyNode(Node *node);
 Node *findLowestKeyNode(Node *node);
 
 
-void rotate(std::pair<int,int> directions, AvlTree *tree, Node *node);
+void rotate(AvlTree *tree, Node *node);
 void rotateL(AvlTree *tree, Node *node);
 void rotateR(AvlTree *tree, Node *node);
 void rotateLR(AvlTree *tree, Node *node);

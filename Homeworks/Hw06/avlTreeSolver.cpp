@@ -68,6 +68,7 @@ int insertNode(AvlTree *tree, Node *node) {
 
     node->isLeftChild = isLeftChild;
     addChild(tree, parentNode, node);
+    recalculateDepths(tree, node);
     return deletedNodes;
 }
 
@@ -107,7 +108,6 @@ void removeNode(AvlTree *tree, Node *node) {
     }
 //    else (is leaf)
     else {
-        recalculateDepths(tree, node, DELETE_RECALCULATE);
         --tree->size;
         if (node->parent == nullptr){
             tree->root = nullptr;
@@ -116,6 +116,7 @@ void removeNode(AvlTree *tree, Node *node) {
             return;
         }
         node->isLeftChild ? node->parent->left = nullptr : node->parent->right = nullptr;
+        recalculateDepths(tree, node);
         delete node;
     }
 //    check for rotations
