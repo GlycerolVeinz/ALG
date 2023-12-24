@@ -110,9 +110,8 @@ void addRoot(AvlTree *tree, Node *node) {
 }
 
 void recalculateDepths(AvlTree *tree, Node *node){
-    Node *currentNode = node;
-
-    while (currentNode->parent != nullptr){
+    Node * currentNode = node;
+    while ( currentNode && currentNode->parent ){
         if (currentNode->isLeftChild){
             int leftDepth = currentNode->left == nullptr ? -1 : currentNode->left->depth - currentNode->depth;
             int rightDepth = currentNode->right == nullptr ? -1 : currentNode->right->depth - currentNode->depth;

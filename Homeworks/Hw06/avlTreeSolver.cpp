@@ -20,7 +20,7 @@ int main (){
         } else {
             deletedNodes = deleteNode(tree, -currentOperation);
         }
-        if (deletedNodes > 1 + (tree->maxDepth / 2)){
+        if (deletedNodes > ( 1 + (tree->maxDepth / 2) ) ){
             consolidate(tree, tree->root);
             ++tree->consolidationsCount;
         }
@@ -43,10 +43,10 @@ int insertNode(AvlTree *tree, Node *node) {
     Node *currentNode = tree->root;
     Node *parentNode = nullptr;
     bool isLeftChild = false;
-
 //    runs through a tree, to place a new node
     while (currentNode != nullptr){
-        if (currentNode->isDeleted)++deletedNodes;
+        if (currentNode->isDeleted)
+            ++deletedNodes;
         parentNode = currentNode;
 
         if (node->key < currentNode->key){
@@ -65,7 +65,6 @@ int insertNode(AvlTree *tree, Node *node) {
             return maxDeletedNodesTillEnd(deletedNodes, currentNode);
         }
     }
-
     node->isLeftChild = isLeftChild;
     addChild(tree, parentNode, node);
     recalculateDepths(tree, node);
@@ -77,7 +76,8 @@ int deleteNode(AvlTree *tree, int key) {
     int deletedNodes = 0;
 
     while (currentNode != nullptr){
-        if (currentNode->isDeleted) ++deletedNodes;
+        if (currentNode->isDeleted)
+            ++deletedNodes;
 
         if (key < currentNode->key){
             currentNode = currentNode->left;
@@ -89,7 +89,8 @@ int deleteNode(AvlTree *tree, int key) {
         }
     }
 
-    if (currentNode == nullptr) return deletedNodes;
+    if (currentNode == nullptr)
+        return deletedNodes;
     return maxDeletedNodesTillEnd(deletedNodes, currentNode);
 }
 
