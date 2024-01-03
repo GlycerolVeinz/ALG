@@ -1,64 +1,84 @@
-#include "simulator.h"
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#include <string>
 
-Simulator *readInput() {
-    auto *sim = new Simulator;
+using std::string;
+using std::cin;
+using std::cout;
+
+
+typedef struct{
     unsigned long S, K, M;
-    std::cin >> S >> K >> M;
-    sim->S_simulatorSequencesCount = S;
-    sim->K_simulatorSequenceLength = K;
-    sim->M_sequenceLength = M;
+    std::unordered_set<string> possibleSimulatorSequences;
+} Simulator;
 
-    for (int i = 0; i < S; ++i) {
-        std::string sequence;
+Simulator* readInput() {
+    Simulator* sim = new Simulator;
+    cin >> sim->S >> sim->K >> sim->M;
 
-        for (int j = 0; j < K; ++j) {
-            char letter;
-            std::cin >> letter;
-
-            sim->possibleSimulatorStates.insert(letter);
-            sequence.push_back(letter);
-        }
-
-        sim->possibleSimulatorSequences.insert(sequence);
+    for (int i = 0; i < sim->S; ++i) {
+        string seq;
+        cin >> seq;
+        sim->possibleSimulatorSequences.insert(seq);
     }
-
 
     return sim;
 }
 
+#define POSSIBLE_STATES {'A', 'B', 'C', 'D'}
 
-int main() {
-    Simulator *sim = readInput();
+// Helper function to get the last K characters or the whole string if shorter
+string getLastK(const string& str, int K) {
+    int n = (int) str.length();
+    return str.substr(std::max(0, n - K), std::min(n, K));
+}
 
-    std::vector<std::unordered_set<std::string>> possibleSequences;
-    possibleSequences.push_back(sim->possibleSimulatorSequences);
-    int currentSubstring = 1;
+unsigned long countSequences(Simulator* sim) {
+    // DP table: dp[length][lastKChars] = number of sequences
+    std::unordered_map<string, unsigned long> dp[sim->M + 1];
 
-    while (possibleSequences.size() - 1 != sim->M_sequenceLength - sim->K_simulatorSequenceLength) {
-        std::unordered_set<std::string> lastResults = possibleSequences.back();
-        std::unordered_set<std::string> newResults;
+    // Base case
+    dp[0][""] = 1; // 1 way to have a sequence of length 0
 
-        for (const std::string &lastRes: lastResults) {
-            std::string tmpStr = lastRes.substr(currentSubstring, std::string::npos);
+    // Building the DP table
+    for (int length = 1; length <= sim->M; ++length) {
 
-            for (char c: sim->possibleSimulatorStates) {
-                tmpStr.push_back(c);
+        for (char c : POSSIBLE_STATES) {
 
-                if (sim->possibleSimulatorSequences.find(tmpStr) != sim->possibleSimulatorSequences.end()) {
-                    std::string newRes = lastRes;
-                    newRes.push_back(c);
-                    newResults.insert(newRes);
+            for (auto& [lastKChars, count] : dp[length - 1]) {
+
+                string newLastK = getLastK(lastKChars + c, (int) sim->K);
+
+                if (length < sim->K || sim->possibleSimulatorSequences.count(newLastK)) {
+                    dp[length][newLastK] += count;
                 }
-
-                tmpStr.pop_back();
             }
         }
-
-        possibleSequences.push_back(newResults);
-        ++currentSubstring;
     }
 
-    std::cout << possibleSequences.back().size() << std::endl;
+    // Summing up all valid sequences of length M
+    unsigned long result = 0;
+    for (auto& [lastKChars, count] : dp[sim->M]) {
+        result += count;
+    }
+
+////    print dp
+//    for (int length = 0; length <= sim->M; ++length) {
+//        cout << "length " << length << std::endl;
+//        for (auto& [lastKChars, count] : dp[length]) {
+//            cout << lastKChars << " " << count << std::endl;
+//        }
+//        cout << std::endl;
+//    }
+
+    return result;
+}
+
+int main() {
+    Simulator* sim = readInput();
+    cout << countSequences(sim) << std::endl;
     delete sim;
     return 0;
 }
