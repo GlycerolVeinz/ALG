@@ -4,12 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 
 
 typedef struct {
     unsigned long  S_simulatorSequencesCount, K_simulatorSequenceLength, M_sequenceLength;
 
-    std::unordered_set<std::string> possibleSimulatorSequences;
+    std::unordered_map<std::string, unsigned long> possibleSimulatorSequences;
     std::unordered_set<char> possibleSimulatorStates;
 
     int res;
