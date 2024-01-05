@@ -1,5 +1,13 @@
 #include "garden.h"
 
+Coord getNeighbourCoord(Tile *tile, std::pair<int,int> delta){
+    Coord neighbourCoord;
+    neighbourCoord.y = tile->coord->y + delta.first;
+    neighbourCoord.x = tile->coord->x + delta.second;
+
+    return neighbourCoord;
+}
+
 bool isOutOfBounds(Garden *garden, Coord *coord) {
     bool ret = false;
     if (coord->x < 0 || coord->x >= garden->width ||
@@ -9,6 +17,11 @@ bool isOutOfBounds(Garden *garden, Coord *coord) {
     return ret;
 }
 
+/*
+ * Gets Tile* from coordinates
+ * if coordinates are out of bounds
+ *  returns nullptr!!
+ * */
 Tile *getTile(Garden *garden, Coord *coord){
     if (isOutOfBounds(garden, coord))
         return nullptr;
@@ -16,14 +29,15 @@ Tile *getTile(Garden *garden, Coord *coord){
     return garden->gardenMap.at(coord->y).at(coord->x);
 }
 
-
+/*
+ * Returns all neighbours in vector
+ * accounts for out of bounds, so that vector doesn't have nullptr
+ * */
 vector<Tile*> getAllNeighbours(Garden *garden, Tile *tile){
     vector<Tile*> neighbours;
 
-    for (std::pair<int,int> neighbourCoord : ALL_NEIGHBOURS){
-        Coord newCoord;
-        newCoord.x = tile->coord->x + neighbourCoord.second;
-        newCoord.y = tile->coord->y + neighbourCoord.first;
+    for (std::pair<int,int> neighbourCoordDelta : ALL_NEIGHBOURS){
+        Coord newCoord = getNeighbourCoord(tile, neighbourCoordDelta);
 
         Tile *neighbour = getTile(garden, &newCoord);
         if ( neighbour )
@@ -49,21 +63,16 @@ Tile *readCurrentTile(size_t y, size_t x){
     else
         tile->isPlant = false;
 
+    tile->cost = 0;
+    tile->bestCostPerRoute = std::numeric_limits<long>::min();
+    tile->shortestPathLength = std::numeric_limits<long>::min();
+
     return tile;
 }
 
-void updateNeighbourCosts(Garden* garden, Tile* tile){
+void updateMyCost(Garden* garden, Tile* tile){
     for (Tile *neighbour : getAllNeighbours(garden, tile)){
-        neighbour->cost += tile->plantValue;
-    }
-}
-
-void updateCosts(Garden *garden){
-    for (const vector<Tile*>& row : garden->gardenMap){
-        for (Tile *tile : row){
-            if (tile->isPlant)
-                updateNeighbourCosts(garden, tile);
-        }
+        tile->cost += neighbour->plantValue;
     }
 }
 
@@ -80,7 +89,6 @@ Garden *readInput(){
         garden->gardenMap.push_back(row);
     }
 
-    updateCosts(garden);
     return garden;
 }
 

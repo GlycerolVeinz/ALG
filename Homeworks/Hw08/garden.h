@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <limits>
 
 using std::vector;
 using std::cin;
@@ -16,10 +17,12 @@ typedef struct {
 
 typedef struct {
     Coord *coord;
-    int plantValue;
+    unsigned int plantValue;
     bool isPlant;
 
-    int cost;
+    unsigned int cost;
+    long bestCostPerRoute;
+    long shortestPathLength;
 } Tile;
 
 typedef struct {
@@ -33,12 +36,12 @@ typedef struct {
 #define RIGHT_NEIGHBOUR std::pair<int,int>(1, 0)
 #define ALL_NEIGHBOURS {UP_NEIGHBOUR, DOWN_NEIGHBOUR, LEFT_NEIGHBOUR, RIGHT_NEIGHBOUR}
 
+Coord getNeighbourCoord(Tile *tile, std::pair<int,int> delta);
 bool isOutOfBounds(Garden *garden, Coord *coord);
 Tile *getTile(Garden *garden, Coord *coord);
 vector<Tile*> getAllNeighbours(Garden *garden, Tile *tile);
 Tile *readCurrentTile(size_t y, size_t x);
-void updateNeighbourCosts(Garden* garden, Tile* tile);
-void updateCosts(Garden *garden);
+void updateMyCost(Garden* garden, Tile* tile);
 Garden *readInput();
 
 #endif //HW08_GARDEN_H
