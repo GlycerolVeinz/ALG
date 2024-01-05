@@ -8,10 +8,10 @@ Coord getNeighbourCoord(Tile *tile, std::pair<int,int> delta){
     return neighbourCoord;
 }
 
-bool isOutOfBounds(Garden *garden, Coord *coord) {
+bool isOutOfBounds(Garden *garden, Coord coord) {
     bool ret = false;
-    if (coord->x < 0 || coord->x >= garden->width ||
-        coord->y < 0 || coord->y >= garden->height)
+    if (coord.x < 0 || coord.x >= garden->width ||
+        coord.y < 0 || coord.y >= garden->height)
         ret = true;
 
     return ret;
@@ -22,11 +22,11 @@ bool isOutOfBounds(Garden *garden, Coord *coord) {
  * if coordinates are out of bounds
  *  returns nullptr!!
  * */
-Tile *getTile(Garden *garden, Coord *coord){
+Tile *getTile(Garden *garden, Coord coord){
     if (isOutOfBounds(garden, coord))
         return nullptr;
 
-    return garden->gardenMap.at(coord->y).at(coord->x);
+    return garden->gardenMap.at(coord.y).at(coord.x);
 }
 
 /*
@@ -39,7 +39,7 @@ vector<Tile*> getAllNeighbours(Garden *garden, Tile *tile){
     for (std::pair<int,int> neighbourCoordDelta : ALL_NEIGHBOURS){
         Coord newCoord = getNeighbourCoord(tile, neighbourCoordDelta);
 
-        Tile *neighbour = getTile(garden, &newCoord);
+        Tile *neighbour = getTile(garden, newCoord);
         if ( neighbour )
             neighbours.push_back(neighbour);
     }
@@ -92,4 +92,11 @@ Garden *readInput(){
     return garden;
 }
 
+Tile *getLeftNeighbour(Garden *garden, Tile *tile){
+    return getTile(garden, getNeighbourCoord(tile, LEFT_NEIGHBOUR));
+}
+
+Tile *getRightNeighbour(Garden *garden, Tile *tile){
+    return getTile(garden, getNeighbourCoord(tile, RIGHT_NEIGHBOUR));
+}
 
