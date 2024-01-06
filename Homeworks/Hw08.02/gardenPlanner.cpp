@@ -16,10 +16,11 @@ int main(){
         if (isPlant(&g, tile))
             continue;
 
+        Garden curG = g;
         initTile(&g, tile);
-        pair<size_t,size_t> lastRes = checkAllPathsRecursive(&g, tile);
+        pair<size_t,size_t> lastRes = checkAllPathsRecursive(&curG, tile);
 
-        if (lastRes.first <= bestRes.first )
+        if (lastRes.first <= bestRes.first)
             bestRes = lastRes;
     }
 
@@ -52,7 +53,7 @@ void goDown(Garden *g, Coord tile) {
         return;
 
     Coord nextTile = getTile(tile, DOWN_NEIGHBOUR);
-    if (!isOutOfBounds(g, nextTile) || !isPlant(g, nextTile)){
+    if (!isOutOfBounds(g, nextTile) && !isPlant(g, nextTile)){
         if (g->costs[nextTile.first][nextTile.second] == 0)
             updateCost(g, nextTile);
         checkForBetterPath(g, tile, nextTile);
@@ -65,7 +66,7 @@ void goRecursive(Garden *g, Coord tile, pair<size_t, size_t> delta) {
         return;
 
     Coord nextTile = getTile(tile, delta);
-    if (!isOutOfBounds(g, nextTile) || !isPlant(g, nextTile)){
+    if (!isOutOfBounds(g, nextTile) && !isPlant(g, nextTile)){
         if (g->costs[nextTile.first][nextTile.second] == 0)
             updateCost(g, nextTile);
         checkForBetterPath(g, tile, nextTile);
