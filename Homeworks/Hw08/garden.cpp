@@ -64,15 +64,18 @@ Tile *readCurrentTile(size_t y, size_t x){
         tile->isPlant = false;
 
     tile->cost = 0;
-    tile->bestCostPerRoute = std::numeric_limits<long>::min();
-    tile->shortestPathLength = std::numeric_limits<long>::min();
+    tile->bestCostPerRoute = 0;
+    tile->shortestPathLength = std::numeric_limits<size_t>::max();
 
     return tile;
 }
 
 void updateMyCost(Garden* garden, Tile* tile){
-    for (Tile *neighbour : getAllNeighbours(garden, tile)){
-        tile->cost += neighbour->plantValue;
+    if (!tile->wasUpdated && !tile->isPlant) {
+        for (Tile *neighbour: getAllNeighbours(garden, tile)) {
+            tile->cost += neighbour->plantValue;
+        }
+        tile->wasUpdated = true;
     }
 }
 
@@ -100,3 +103,10 @@ Tile *getRightNeighbour(Garden *garden, Tile *tile){
     return getTile(garden, getNeighbourCoord(tile, RIGHT_NEIGHBOUR));
 }
 
+Tile *getUpperNeighbour(Garden *garden, Tile *tile){
+    return getTile(garden, getNeighbourCoord(tile, UP_NEIGHBOUR));
+}
+
+Tile *getLowerNeighbour(Garden *garden, Tile *tile){
+    return getTile(garden, getNeighbourCoord(tile, DOWN_NEIGHBOUR));
+}

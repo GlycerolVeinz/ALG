@@ -20,9 +20,11 @@ typedef struct {
     unsigned int plantValue;
     bool isPlant;
 
+    bool wasUpdated;
+
     unsigned int cost;
-    long bestCostPerRoute;
-    long shortestPathLength;
+    size_t bestCostPerRoute;
+    size_t shortestPathLength;
 } Tile;
 
 typedef struct {
@@ -45,4 +47,6 @@ void updateMyCost(Garden* garden, Tile* tile);
 Garden *readInput();
 Tile *getLeftNeighbour(Garden *garden, Tile *tile);
 Tile *getRightNeighbour(Garden *garden, Tile *tile);
+Tile *getUpperNeighbour(Garden *garden, Tile *tile);
+Tile *getLowerNeighbour(Garden *garden, Tile *tile);
 #endif //HW08_GARDEN_H
