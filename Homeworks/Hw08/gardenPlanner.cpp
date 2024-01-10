@@ -20,6 +20,19 @@ int main(){
     }
 
 //    collect results
+    std::pair<size_t,size_t> res = std::make_pair(0, std::numeric_limits<size_t>::max());
+    for (char direction = 0; direction < DIRECTIONS_COUNT; ++direction){
+        for (auto tile : g->gardenMap.at(direction).at(g->height - 1)){
+            if (tile->bestCost > res.first){
+                res.first = tile->bestCost;
+                res.second = tile->shortestPath;
+            } else if (tile->bestCost == res.first && tile->shortestPath < res.second){
+                res.second = tile->shortestPath;
+            }
+        }
+    }
+
+    cout << res.first << " " << res.second << std::endl;
 
     delete g;
     return 0;
@@ -58,7 +71,13 @@ void updateSideTiles(Garden *g, Coord coord) {
     if (tile->isPlant)
         return;
 
+    std::pair<size_t, size_t> direction = coord.dir == LEFT_DIR ? LEFT_NEIGHBOUR : RIGHT_NEIGHBOUR;
+    Tile *prev = tile;
+    Tile *next = getNeighbourTile(g, tile, direction);
+    while ( next && !next->isPlant ) {
+        decideValues(prev, next);
 
+        prev = next;
+        next = getNeighbourTile(g, prev, direction);
+    }
 }
-
-

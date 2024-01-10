@@ -65,8 +65,8 @@ Tile *readCurrentTile(char dir, size_t y, size_t x, unsigned short val){
     tile->isPlant = (val > 0);
 
     tile->cost = 0;
-    tile->bestCost = std::numeric_limits<long>::min();
-    tile->shortestPath = std::numeric_limits<long>::min();
+    tile->bestCost = std::numeric_limits<size_t>::min();
+    tile->shortestPath = std::numeric_limits<size_t>::max();
 
     return tile;
 }
