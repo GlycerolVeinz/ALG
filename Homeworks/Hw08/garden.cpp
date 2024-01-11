@@ -31,7 +31,7 @@ Tile *getTile(Garden *garden, Coord coord){
     if (isOutOfBounds(garden, coord))
         return nullptr;
 
-    return garden->gardenMap.at(coord.dir).at(coord.y).at(coord.x);
+    return garden->gardenMap.at(coord.y).at(coord.x).at(coord.dir);
 }
 
 /*
@@ -81,35 +81,35 @@ Garden *readInput(){
     auto *garden = new Garden;
     cin >> garden->height >> garden->width;
 
-    garden->gardenMap.resize(DIRECTIONS_COUNT);
+    garden->gardenMap.resize(garden->height);
+    for (size_t y = 0; y < garden->height; ++y) {
 
-    garden->gardenMap.at(LEFT_DIR).resize(garden->height);
-    for (size_t y = 0; y < garden->height; ++y){
-
-        garden->gardenMap.at(LEFT_DIR).at(y).resize(garden->width);
+        garden->gardenMap.at(y).resize(garden->width);
         for (size_t x = 0; x < garden->width; ++x){
+            garden->gardenMap.at(y).at(x).resize(DIRECTIONS_COUNT);
             int val;
             cin >> val;
+
             Tile *curTile = readCurrentTile(LEFT_DIR, y, x, val);
-            garden->gardenMap[LEFT_DIR][y][x] = curTile;
+            garden->gardenMap[y][x][LEFT_DIR] = curTile;
         }
     }
 
-    garden->gardenMap.at(RIGHT_DIR).resize(garden->height);
-    for (const auto& row : garden->gardenMap.at(LEFT_DIR)){
-        garden->gardenMap.at(RIGHT_DIR).at(row.at(0)->coord->y).resize(garden->width);
-        for (auto tile : row){
+    for (size_t y = 0; y < garden->height; ++y){
+        for (size_t x = 0; x < garden->width; ++x){
+            Tile *tile = getTile(garden, makeCoord(LEFT_DIR, y, x));
             updateMyCost(garden, tile);
+
             Tile *copyTile = readCurrentTile(RIGHT_DIR, tile->coord->y, tile->coord->x, tile->plantValue);
             copyTile->cost = tile->cost;
-            garden->gardenMap[RIGHT_DIR][tile->coord->y][tile->coord->x] = copyTile;
+            garden->gardenMap[tile->coord->y][tile->coord->x][RIGHT_DIR] = copyTile;
         }
     }
 
     return garden;
 }
 
-Coord coord(char dir, size_t y, size_t x){
+Coord makeCoord(char dir, size_t y, size_t x){
     Coord c;
     c.dir = dir;
     c.y = y;

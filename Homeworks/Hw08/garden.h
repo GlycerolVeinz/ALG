@@ -44,7 +44,7 @@ typedef struct {
 #define RIGHT_NEIGHBOUR std::pair<int,int>(0, 1)
 #define ALL_NEIGHBOURS {UP_NEIGHBOUR, DOWN_NEIGHBOUR, LEFT_NEIGHBOUR, RIGHT_NEIGHBOUR}
 
-Coord coord(char dir, size_t y, size_t x);
+Coord makeCoord(char dir, size_t y, size_t x);
 
 Coord getNeighbourCoord(Tile *tile, std::pair<size_t ,size_t> delta);
 
