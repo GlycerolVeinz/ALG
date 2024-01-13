@@ -46,7 +46,7 @@ typedef struct {
 
 Coord makeCoord(char dir, size_t y, size_t x);
 
-Coord getNeighbourCoord(Tile *tile, std::pair<size_t ,size_t> delta);
+Coord getNeighbourCoord(Tile *tile, char dir, std::pair<size_t ,size_t> delta);
 
 Tile *getNeighbourTile(Garden *garden, Tile *tile, std::pair<size_t, size_t> delta);
 
