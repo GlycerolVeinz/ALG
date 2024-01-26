@@ -1,0 +1,110 @@
+Introduction to std::priority_queue:
+
+In C++, std::priority_queue is a container adapter provided by the Standard Template Library (STL). It is implemented as a heap, which is a specialized tree-based data structure.
+Basics:
+
+    Include Necessary Headers:
+
+    cpp
+
+#include <iostream>
+#include <queue>
+
+Declare a Priority Queue:
+
+cpp
+
+std::priority_queue<int> pq;  // Default: Max heap
+
+By default, std::priority_queue is a max heap. You can create a min heap by providing the third template parameter:
+
+cpp
+
+std::priority_queue<int, std::vector<int>, std::greater<int>> minHeap;
+
+Push Elements:
+
+cpp
+
+pq.push(10);
+pq.push(5);
+pq.push(20);
+
+Pop Elements:
+
+cpp
+
+pq.pop();  // Removes the top element (max or min, depending on heap type)
+
+Access Top Element:
+
+cpp
+
+int topElement = pq.top();  // Retrieves the top element without removing it
+
+Check if Empty:
+
+cpp
+
+if (pq.empty()) {
+    std::cout << "Priority Queue is empty." << std::endl;
+}
+
+Size of Priority Queue:
+
+cpp
+
+    int size = pq.size();
+
+Custom Comparators:
+
+You can use custom comparators for more complex data types or to define a specific ordering:
+
+cpp
+
+#include <functional>  // Include the functional header
+
+struct CustomType {
+    int value;
+    // Other members...
+
+    // Overload the less-than operator for comparison
+    bool operator<(const CustomType& other) const {
+        return value > other.value;  // Max heap
+    }
+};
+
+// Declare a priority queue with a custom type and comparator
+std::priority_queue<CustomType> customQueue;
+
+// Alternatively, use a lambda function as a comparator
+auto customComparator = [](const CustomType& a, const CustomType& b) {
+    return a.value > b.value;  // Max heap
+};
+
+std::priority_queue<CustomType, std::vector<CustomType>, decltype(customComparator)> customQueueWithComparator(customComparator);
+
+Example:
+
+Here's a simple example demonstrating the use of a max heap:
+
+cpp
+
+#include <iostream>
+#include <queue>
+
+int main() {
+    std::priority_queue<int> maxHeap;
+
+    maxHeap.push(10);
+    maxHeap.push(5);
+    maxHeap.push(20);
+
+    std::cout << "Top element: " << maxHeap.top() << std::endl;
+
+    maxHeap.pop();
+
+    std::cout << "Top element after pop: " << maxHeap.top() << std::endl;
+
+    return 0;
+}
