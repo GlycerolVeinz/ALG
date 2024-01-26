@@ -1,88 +1,84 @@
 #include "garden.h"
 
-void decideValues(Tile *prev, Tile *next);
-
-void readFromTop(Garden *g, Tile *t);
-
-void readFromPrevInDir(Garden *g, Tile* t, std::pair<int,int> readFrom);
+void checkAllPathsRecursively(Garden *g, Tile *t);
+void updateTileBelow(Garden *g, Tile *t);
+void checkForBetterPath(Tile *prev, Tile *next);
+void goRecursive(Garden *g, Tile *t, Tile *(*nextTile)(Garden*, Tile*));
 
 // MAIN ================================================================================================================
-int main() {
+int main(){
     Garden *g = readInput();
 
-    for (size_t y = 0; y < g->height; ++y) {
-//        movement to right
-        for (Tile *rT : g->gardenMap.at(RIGHT_DIR).at(y)) {
-            if (rT->isPlant)
-                continue;
+    for (Tile *t : g->gardenMap.at(0)){
+        updateMyCost(g, t);
+        t->shortestPathLength = 1;
+        t->bestCostPerRoute = t->cost;
 
-            readFromTop(g, rT);
-            readFromPrevInDir(g, rT, LEFT_NEIGHBOUR);
-        }
+        checkAllPathsRecursively(g, t);
+    }
 
-        auto leftDirRow = g->gardenMap.at(LEFT_DIR).at(y);
-//        movement to left
-        for ( auto rIt = leftDirRow.rbegin(); rIt != leftDirRow.rend(); ++rIt){
-            Tile *tile = *rIt;
-            if (tile->isPlant)
-                continue;
-
-            readFromTop(g, tile);
-            readFromPrevInDir(g, tile, RIGHT_NEIGHBOUR);
+//   get the best result
+    size_t resCost = 0;
+    size_t resLength = std::numeric_limits<long>::max();
+    for (Tile *t : g->gardenMap.at(g->height - 1)){
+        if (t->bestCostPerRoute > resCost){
+            resCost = t->bestCostPerRoute;
+            if (t->shortestPathLength < resLength)
+                resLength = t->shortestPathLength;
         }
     }
 
-    std::pair<size_t, size_t> res = std::make_pair(0, std::numeric_limits<size_t>::max());
-    for (auto dir : {LEFT_DIR, RIGHT_DIR}){
-        for (auto t : g->gardenMap.at(dir).at(g->height - 1)){
-            if (t->bestCost > res.first){
-                res.first = t->bestCost;
-                res.second = t->shortestPath;
-            } else if (t->bestCost == res.first && t->shortestPath < res.second){
-                res.second = t->shortestPath;
-            }
-        }
-    }
-
-    cout << res.first << " " << res.second << std::endl;
+    cout << resCost << " " << resLength << std::endl;
 
     delete g;
     return 0;
 }
+
 // EO MAIN =============================================================================================================
 
-void initFirstLineTile(Tile *tile) {
-    tile->bestCost = tile->cost;
-    tile->shortestPath = 1;
+void checkAllPathsRecursively(Garden *g, Tile *t) {
+    goRecursive(g, t, getLeftNeighbour);
+    goRecursive(g, t, getRightNeighbour);
+    updateTileBelow(g, t);
 }
 
-void decideValues(Tile *prev, Tile *next) {
-    if (next->bestCost < prev->bestCost + next->cost) {
-        next->bestCost = prev->bestCost + next->cost;
-        next->shortestPath = prev->shortestPath + 1;
+void goRecursive(Garden *g, Tile *t, Tile *(*nextTile)(Garden*, Tile*)) {
+    if (!t || t->isPlant){
+        return;
+    }
 
-    } else if (next->bestCost == prev->bestCost + next->cost
-               && prev->shortestPath + 1 < next->shortestPath) {
-        next->shortestPath = prev->shortestPath + 1;
+    Tile *next = nextTile(g, t);
+    if (next && !next->isPlant){
+        updateMyCost(g, next);
+        checkForBetterPath(next, t);
+        goRecursive(g, next, nextTile);
     }
 }
 
-void readFromTop(Garden *g, Tile *t){
-    Tile *lTopTile = getTile(g, getNeighbourCoord(t, LEFT_DIR, UP_NEIGHBOUR));
-    Tile *rTopTile = getTile(g, getNeighbourCoord(t, RIGHT_DIR, UP_NEIGHBOUR));
+void updateTileBelow(Garden *g, Tile *t) {
+    if (!t || t->isPlant){
+        return;
+    }
 
-    if ( !lTopTile ) {
-        initFirstLineTile(t);
-    } else if ( !lTopTile->isPlant ) {
-        decideValues(lTopTile, t);
-        decideValues(rTopTile, t);
+    Tile *below = getLowerNeighbour(g, t);
+    if (below && !below->isPlant){
+        updateMyCost(g, below);
+        checkForBetterPath(t, below);
+        checkAllPathsRecursively(g, below);
     }
 }
 
-void readFromPrevInDir(Garden *g, Tile* t, std::pair<int,int> readFrom){
-    Tile *prev = getNeighbourTile(g, t, readFrom);
+void checkForBetterPath(Tile *prev, Tile *next) {
+    if (next->bestCostPerRoute < prev->bestCostPerRoute + next->cost){
+        next->bestCostPerRoute = prev->bestCostPerRoute + next->cost;
+        next->shortestPathLength = prev->shortestPathLength + 1;
 
-    if ( prev && !prev->isPlant ){
-        decideValues(prev, t);
+    } else if (next->bestCostPerRoute == prev->bestCostPerRoute + next->cost){
+        if (next->shortestPathLength > prev->shortestPathLength + 1){
+            next->shortestPathLength = prev->shortestPathLength + 1;
+        }
+
+    } else {
+        return;
     }
 }
