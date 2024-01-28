@@ -7,18 +7,16 @@
 namespace MyADTs {
     namespace Sorters {
 
-        template <typename T>
-        void Sorter<T>::swapByIndex(vector<T> vec, size_t i, size_t j){
-            T temp =vec.at(i);
+        void Sorter::swapByIndex(vector<int> &vec, long i, long j){
+            int temp = vec.at(i);
             vec.at(i) = vec.at(j);
             vec.at(j) = temp;
         }
 
         namespace simple {
-            template<typename T>
-            void InsertionSorter<T>::sort(vector<T> &vec) {
+            void InsertionSorter::sort(vector<int> &vec) {
                 for (long i = 1; i < vec.size(); ++i) {
-                    T key = vec.at(i);
+                    int key = vec.at(i);
                     long j = i - 1;
                     
                     while (j >= 0 && vec.at(j) > key) {
@@ -29,13 +27,13 @@ namespace MyADTs {
                 }
             }
 
-            template<typename T>
-            void SelectionSorter<T>::sort(vector<T> &vec){
-                for (long i = 0; i < vec->size() - 1; ++i){
+            void SelectionSorter::sort(vector<int> &vec){
+                for (long i = 0; i < vec.size() - 1; ++i){
                     long min = i;
-                    for (long j = i + 1; j < vec->size(); ++j) {
-                        if ( vec->at(j) < vec->at(min) )
+                    for (long j = i + 1; j < vec.size(); ++j) {
+                        if ( vec.at(j) < vec.at(min) )
                             min = j;
+
                     }
 
                     if ( min != i ){
@@ -44,11 +42,10 @@ namespace MyADTs {
                 }
             }
 
-            template<typename T>
-            void BubbleSorter<T>::sort(vector<T> &vec) {
-                for (long i = 0; i < vec->size() - 1; ++i) {
-                    for (long j = 0; j < vec->size() - i - 1; ++j) {
-                        if ( vec->at(j) > vec->at(j + 1) )
+            void BubbleSorter::sort(vector<int> &vec) {
+                for (long i = 0; i < vec.size() - 1; ++i) {
+                    for (long j = 0; j < vec.size() - i - 1; ++j) {
+                        if ( vec.at(j) > vec.at(j + 1) )
                             swapByIndex(vec, j, j + 1);
                     }
                 }

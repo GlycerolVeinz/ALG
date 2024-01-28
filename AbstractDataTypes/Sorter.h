@@ -13,65 +13,58 @@ using std::vector;
 namespace MyADTs {
     namespace Sorters {
 
-        template <typename T>
         class Sorter {
         public:
             Sorter() = default;
-            virtual void sort(vector<T> &vec) = 0;
+            virtual void sort(vector<int> &vec) = 0;
 
-            void swapByIndex(vector<T> vec, size_t i, size_t j);
+            static void swapByIndex(vector<int> &vec, long i, long j);
         };
 
         namespace simple {
-            template <typename T>
-            class InsertionSorter : public Sorter<T> {
+            class InsertionSorter : public Sorter {
             public:
-                void sort(vector<T> &vec) override;
+                void sort(vector<int> &vec) override;
             };
 
-            template <typename T>
-            class SelectionSorter : public Sorter<T> {
+            class SelectionSorter : public Sorter {
             public:
-                void sort(vector<T> &vec) override;
+                void sort(vector<int> &vec) override;
             };
 
-            template <typename T>
-            class BubbleSorter : public Sorter<T> {
+            class BubbleSorter : public Sorter {
             public:
-                void sort(vector<T> &vec) override;
+                void sort(vector<int> &vec) override;
             };
         }
 
         namespace Advanced {
-            template <typename T>
-            class QuickSorter : public Sorter<T> {
+            class QuickSorter : public Sorter {
             public:
-                void sort(vector<T> &vec) override;
+                void sort(vector<int> &vec) override;
 
             private:
-                void quickSort(vector<T> &vec, long low, long high);
-                long partition(vector<T> &vec, long low, long high);
+                void quickSort(vector<int> &vec, long low, long high);
+                long partition(vector<int> &vec, long low, long high);
             };
 
-            template <typename T>
-            class MergeSorter : public Sorter<T> {
+            class MergeSorter : public Sorter {
             public:
-                void sort(vector<T> &vec) override;
+                void sort(vector<int> &vec) override;
             private:
-                void mergeSort(vector<T> &vec, long low, long high);
-                void splitAndMerge(vector<T> &vec, long low, long mid, long high);
+                void mergeSort(vector<int> &vec, long low, long high);
+                void splitAndMerge(vector<int> &vec, long low, long mid, long high);
 
-                std::pair<vector<T>, vector<T>> split(vector<T> &vec, long low, long mid, long high);
+                std::pair<vector<int>, vector<int>> split(vector<int> &vec, long low, long mid, long high);
 
-                void merge(vector<T> &vec, vector<T> left, vector<T> right, long low);
+                void merge(vector<int> &vec, vector<int> left, vector<int> right, long low);
             };
 
-            template <typename T>
-            class HeapSorter : public Sorter<T> {
+            class HeapSorter : public Sorter {
             public:
-                void sort(vector<T> &vec) override;
+                void sort(vector<int> &vec) override;
 
-                void heapify(vector<T> &vec, long n, long i);
+                void heapify(vector<int> &vec, long bottom, long top);
             };
         } // Advanced
     } // Sorters
