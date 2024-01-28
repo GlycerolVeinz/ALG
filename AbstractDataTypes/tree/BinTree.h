@@ -6,40 +6,38 @@
 #define ABSTRACTDATATYPES_BINTREE_H
 
 #include <iostream>
+#include <queue>
 
 namespace MyADTs {
     namespace Trees {
         namespace BinaryTree {
 
-            template<typename T>
             class Node{
             public:
-                T *data;
+                void *data;
 
                 Node *parent;
                 Node *left;
                 Node *right;
 
-                Node(Node *par, T *data);
+                Node(Node *par, void *data);
                 ~Node();
             };
 
-
-            template<typename T>
             class BinTree {
             public:
-                Node<T> *root;
+                Node *root;
 
-                BinTree(Node<T>* root);
+                explicit BinTree(Node *root);
                 ~BinTree();
+                void deleteTree(Node *node);
 
-                void deleteTree(Node<T> *node);
-
+                void insert(void *data);
                 size_t depth() const;
 
-                void inorder (Node<T> *node,void (*func)(Node<T>*));
-                void preorder (Node<T> *node,void (*func)(Node<T>*));
-                void postorder (Node<T> *node,void (*func)(Node<T>*));
+                void inorder (Node *node,void (*func)(Node *));
+                void preorder (Node *node,void (*func)(Node *));
+                void postorder (Node *node,void (*func)(Node *));
             };
         }
     }

@@ -1,80 +1,37 @@
 #include <iostream>
 #include <random>
 
-#include "Sorter.h"
-
+#include "tree/BinTree.h"
 using std::vector;
+#define LEN 15
 
-#define vecLen 10
-
-vector<int> createRandVec(){
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, 1000);
-
-    vector<int> randIntVec;
-
-    randIntVec.reserve(vecLen);
-    for (int i = 0; i < vecLen; ++i) {
-        randIntVec.push_back(dis(gen));
-    }
-
-    return randIntVec;
-}
-
-void printVec(const vector<int>& vec){
-    for (int i : vec) {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
+void printNode(MyADTs::Trees::BinaryTree::Node *node) {
+    std::cout << * (int *)node->data << " ";
 }
 
 int main() {
-    vector<int> randIntVec = createRandVec();
-    printVec(randIntVec);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 100);
 
-    for (int k = 0; k < 10; ++k){
-        auto *qSorter = new MyADTs::Sorters::Advanced::QuickSorter();
-        auto *mSorter = new MyADTs::Sorters::Advanced::MergeSorter();
-        auto *hSorter = new MyADTs::Sorters::Advanced::HeapSorter();
-        auto *iSorter = new MyADTs::Sorters::simple::InsertionSorter();
+    auto *tree = new MyADTs::Trees::BinaryTree::BinTree(nullptr);
 
-        vector<int> vec0 = randIntVec;
-        iSorter->sort(vec0);
-        std::cout << "Insertion Sort: " << std::endl;
-        printVec(vec0);
-
-        vector<int> vec1 = randIntVec;
-        qSorter->sort(vec1);
-        std::cout << "Quick Sort: " << std::endl;
-        printVec(vec1);
-
-        vector<int> vec3 = randIntVec;
-        hSorter->sort(vec3);
-        std::cout << "Heap Sort: " << std::endl;
-        printVec(vec3);
-
-        vector<int> vec2 = randIntVec;
-        mSorter->sort(vec2);
-        std::cout << "Merge Sort: " << std::endl;
-        printVec(vec2);
-
-        for (int i = 0; i < randIntVec.size(); ++i) {
-            if (vec0.at(i) != vec1.at(i) ||
-                vec0.at(i) != vec2.at(i) ||
-                vec0.at(i) != vec3.at(i)) {
-
-                std::cerr << "Error at index " << i <<
-                          " Vec1: " << vec1.at(i) <<
-                          " Vec2: " << vec2.at(i) <<
-                          " Vec3: " << vec3.at(i) << std::endl;
-            }
-        }
-
-        delete iSorter;
-        delete qSorter;
-        delete mSorter;
-        delete hSorter;
+    for (size_t i = 0; i < LEN; i++) {
+        int *value = new int;
+        *value = dis(gen);
+        tree->insert(value);
+        std::cerr << *value << " \n";
     }
+
+    std::cout << "Inorder :\n";
+    tree->inorder(tree->root, printNode);
+
+    std::cout << "\nPreorder :\n";
+    tree->preorder(tree->root, printNode);
+
+    std::cout << "\nPostorder :\n";
+    tree->postorder(tree->root, printNode);
+    std::cout << std::endl;
+
     return 0;
 }
