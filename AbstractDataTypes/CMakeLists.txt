@@ -5,4 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_executable(AbstractDataTypes main.cpp
         BinTree.cpp
-        BinTree.h)
+        BinTree.h
+        Sorter.h
+        SimpleSorters.cpp
+        AdvancedSorters.cpp)
