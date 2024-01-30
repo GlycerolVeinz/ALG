@@ -16,7 +16,6 @@ namespace MyADTs {
             }
 
             Node::~Node() {
-                delete this->data;
                 delete this->left;
                 delete this->right;
             }

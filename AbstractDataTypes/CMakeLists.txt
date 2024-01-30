@@ -11,4 +11,7 @@ add_executable(AbstractDataTypes main.cpp
         sort/Sorter.h
         sort/SimpleSorters.cpp
         sort/AdvancedSorters.cpp
+        Andrews.cpp
+        tree/BST.cpp
+        tree/BST.h
 )
