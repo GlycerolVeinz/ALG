@@ -14,4 +14,5 @@ add_executable(AbstractDataTypes main.cpp
         Andrews.cpp
         tree/BST.cpp
         tree/BST.h
+        tree/AVLGPT.cpp
 )
