@@ -1,0 +1,29 @@
+#!/bin/bash
+
+fails=0
+passes=0
+
+for file in ./datapub/*.in
+do
+    echo "------------------------------------"
+    result=$(./cmake-build-debug/zkouska < "$file")
+    shouldBe=$(cat "${file%.*}.out")
+    time ./cmake-build-debug/zkouska < "$file"
+    if [ "$result" == "$shouldBe" ]
+    then
+        passes=$((passes+1))
+        echo "Test passed for $file"
+    else
+        fails=$((fails+1))
+        echo "Test failed for $file"
+        echo "Expected: $shouldBe"
+        echo "Got: $result"
+    fi
+    echo "------------------------------------"
+done
+
+echo "Passed $passes tests"
+echo "Failed $fails tests"
+
+
+
