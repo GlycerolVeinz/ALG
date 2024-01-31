@@ -14,6 +14,7 @@ void solve(){
     auto *q = new std::queue<Jump>;
     q->push(first);
 
+//    ALGORITHM ========================================================================================================
     while (!q->empty()){
         Jump jump = q->front();
         q->pop();
@@ -27,9 +28,11 @@ void solve(){
 
         if ( !currentNode )
             continue;
-        if (currentNode->visited)
+        if (currentNode->visited || currentNode->height != 0)
             continue;
 
+
+//        debugging
 //        std::cerr << jump.from->coord.first << " " << jump.from->coord.second << " -> " << jump.to.first << " " << jump.to.second << "\n";
 
         currentNode->visited = true;
@@ -39,14 +42,31 @@ void solve(){
 
 //        END CONDITION
         if (areEqualCords(currentNode->coord, frog->end)) {
-            cout << currentNode->minPathLen;
+//            cout << currentNode->minPathLen;
+            cout << jump.pathLen;
             f->res = currentNode->minPathLen;
             break;
         }
 
         frog->addDestinations(q, currentNode, jump);
     }
+
+//    print whole field
+//    for (auto dir : {0,1,2,3}){
+//        cerr << "\n\n" << dir << "\n";
+//        for (const auto& row : f->map[dir]){
+//            for (auto node : row){
+//                if (node->height > 0){
+//                    cerr << node->height << " ";
+//                } else if (node->visited) {
+//                    cerr << "X ";
+//                } else {
+//                    cerr << "0 ";
+//                }
+//            }
+//            cerr << "\n";
 }
+
 
 int main() {
     solve();

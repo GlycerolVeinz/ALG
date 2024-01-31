@@ -60,17 +60,17 @@ Field::Field(int height, int length, SpeedVal maxSpeed) {
     this->res = 0;
 }
 
-bool Field::isOutOfBounds(Coord coord) {
+bool Field::isOutOfBounds(Coord coord) const {
     return coord.first < 0 ||
-        coord.second < 0 ||
-        coord.first >= this->height ||
-        coord.second >= this->length;
+           coord.second < 0 ||
+           coord.first >= this->height ||
+           coord.second >= this->length;
 }
 
 Node *Field::getNode(Coord coord, SpeedVal dir) {
     if (isOutOfBounds(coord))
         return nullptr;
-    return this->map[dir][coord.first][coord.second];
+    return this->map.at(dir).at(coord.first).at(coord.second);
 }
 
 bool Frog::isValidJump(Jump jump) const {
@@ -80,7 +80,16 @@ bool Frog::isValidJump(Jump jump) const {
     bool validHeight = true;
     for (int i = 1; i <= jump.speed * 2; ++i){
         Coord pathCoord = jumpPath(jump.from->coord,dirNumToDelta(jump.direction),i);
+
         Node *pathNode = this->field->getNode(pathCoord,jump.direction);
+
+//        TODO fix weird jumps
+        auto aha = (abs(i) % jump.speed) + 1;
+        if (pathNode->height > (aha)) {
+            validHeight = false;
+            break;
+        }
+
         if (pathNode->height > jump.speed){
             validHeight = false;
             break;
@@ -97,37 +106,57 @@ Frog::Frog(Field *field, Coord start, Coord end) {
 }
 
 void Frog::addDestinations(std::queue<Jump> *q, Node *currentNode, Jump currentJump) const {
-    for (SpeedVal dir : ALL_DIR_NUM){
+    for (auto dir : ALL_DIR_NUM){
         if (dir != currentJump.direction){
 //            jump of speed 1 in all other directions
             Coord jumpDestSpeed1 = jumpCoord(currentNode->coord, dirNumToDelta(dir), 1);
             if (this->field->isOutOfBounds(jumpDestSpeed1))
                 continue;
-            q->push(newJump(currentNode, jumpDestSpeed1, dir, 1));
+
+            Jump nJ = newJump(currentNode, jumpDestSpeed1, dir, 1);
+            nJ.pathLen = currentJump.pathLen + 1;
+            q->push(nJ);
 
         } else {
 //            in main dir make jump of speed 1, and S+1, and S, and S-1
-            Coord jumpDestSpeed1 = std::make_pair(-1, -1);
+//            Coord jumpDestSpeed1 = std::make_pair(-1, -1);
             Coord jumpDestSpeed2 = std::make_pair(-1, -1);
             Coord jumpDestSpeed3 = std::make_pair(-1, -1);
             Coord jumpDestSpeed4 = std::make_pair(-1, -1);
 
-            jumpDestSpeed1 = jumpCoord(currentNode->coord, dirNumToDelta(dir), 1);
-            if (currentJump.speed > 1) {
+//            jumpDestSpeed1 = jumpCoord(currentNode->coord, dirNumToDelta(dir), 1);
+
+            if (currentJump.speed > 0) {
                 jumpDestSpeed2 = jumpCoord(currentNode->coord, dirNumToDelta(dir), currentJump.speed - 1);
                 jumpDestSpeed3 = jumpCoord(currentNode->coord, dirNumToDelta(dir), currentJump.speed);
             }
-            if (currentJump.speed != 0 && ((currentJump.speed + 1) <= (this->field->maxSpeed)))
+
+            if ((currentJump.speed + 1) <= (this->field->maxSpeed))
                 jumpDestSpeed4 = jumpCoord(currentNode->coord, dirNumToDelta(dir), currentJump.speed + 1);
 
-            if (!this->field->isOutOfBounds(jumpDestSpeed1))
-                q->push(newJump(currentNode, jumpDestSpeed1, dir, 1));
-            if (!this->field->isOutOfBounds(jumpDestSpeed2))
-                q->push(newJump(currentNode, jumpDestSpeed2, dir, currentJump.speed - 1));
-            if (!this->field->isOutOfBounds(jumpDestSpeed3))
-                q->push(newJump(currentNode, jumpDestSpeed3, dir, currentJump.speed));
-            if (!this->field->isOutOfBounds(jumpDestSpeed4))
-                q->push(newJump(currentNode, jumpDestSpeed4, dir, currentJump.speed + 1));
+//            if (!this->field->isOutOfBounds(jumpDestSpeed1)) {
+//                Jump nJ = newJump(currentNode, jumpDestSpeed1, dir, 1);
+//                nJ.pathLen = currentJump.pathLen + 1;
+//                q->push(nJ);
+//            }
+
+            if (!this->field->isOutOfBounds(jumpDestSpeed2)) {
+                Jump nJ = newJump(currentNode, jumpDestSpeed2, dir, currentJump.speed - 1);
+                nJ.pathLen = currentJump.pathLen + 1;
+                q->push(nJ);
+            }
+
+            if (!this->field->isOutOfBounds(jumpDestSpeed3)) {
+                Jump nJ = newJump(currentNode, jumpDestSpeed3, dir, currentJump.speed);
+                nJ.pathLen = currentJump.pathLen + 1;
+                q->push(nJ);
+            }
+
+            if (!this->field->isOutOfBounds(jumpDestSpeed4)) {
+                Jump nJ = newJump(currentNode, jumpDestSpeed4, dir, currentJump.speed + 1);
+                nJ.pathLen = currentJump.pathLen + 1;
+                q->push(nJ);
+            }
         }
     }
 }
@@ -138,12 +167,13 @@ Jump newJump(Node *from, Coord to, SpeedVal direction, SpeedVal speed){
     j.direction = direction;
     j.to = to;
     j.speed = speed;
+    j.pathLen = 0;
     return j;
 }
 
 bool areEqualCords(Coord c1, Coord c2){
     return (c1.first == c2.first) &&
-    (c1.second == c2.second);
+           (c1.second == c2.second);
 }
 
 pair<int,int> dirNumToDelta(int dirNum){
@@ -163,6 +193,7 @@ pair<int,int> dirNumToDelta(int dirNum){
             ret = RIGHT_DIRECTION;
             break;
         default:
+            cerr << "something went wrong";
             ret = std::make_pair(0,0);
     }
 
@@ -174,7 +205,7 @@ Coord jumpCoord(Coord cur, pair<int,int> dir, SpeedVal speed){
                           cur.second + dir.second * 2 * speed);
 }
 
-Coord jumpPath(Coord cur, pair<int, int> dir, SpeedVal delta){
-    return std::make_pair(cur.first + dir.first * delta,
-                          cur.second + dir.second * delta);
+Coord jumpPath(Coord cur, pair<int, int> movementDir, SpeedVal delta){
+    return std::make_pair(cur.first + movementDir.first * delta,
+                          cur.second + movementDir.second * delta);
 }

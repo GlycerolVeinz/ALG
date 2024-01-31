@@ -26,6 +26,7 @@ using std::vector;
 using std::pair;
 using std::cin;
 using std::cout;
+using std::cerr;
 
 typedef unsigned short SpeedVal;
 
@@ -49,6 +50,7 @@ typedef struct {
     Coord to;
     SpeedVal direction;
     SpeedVal speed;
+    size_t pathLen;
 } Jump;
 
 typedef vector<vector<vector<Node *>>> map_t;
@@ -63,7 +65,7 @@ public:
 
     Field(int height, int length, SpeedVal maxSpeed);
 
-    bool isOutOfBounds(Coord coord);
+    bool isOutOfBounds(Coord coord) const;
 
     Node *getNode(Coord coord, SpeedVal dir);
 };
@@ -91,6 +93,6 @@ pair<int,int> dirNumToDelta(int dirNum);
 
 Coord jumpCoord(Coord cur, pair<int,int> dir, SpeedVal speed);
 
-Coord jumpPath(Coord cur, pair<int, int> dir, SpeedVal delta);
+Coord jumpPath(Coord cur, pair<int, int> movementDir, SpeedVal delta);
 
 #endif //ZKOUSKA_FROG_H
