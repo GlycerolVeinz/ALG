@@ -123,11 +123,11 @@ void Frog::addDestinations(std::queue<Jump> *q, Node *currentNode, Jump currentJ
             if (!this->field->isOutOfBounds(jumpDestSpeed1))
                 q->push(newJump(currentNode, jumpDestSpeed1, dir, 1));
             if (!this->field->isOutOfBounds(jumpDestSpeed2))
-                q->push(newJump(currentNode, jumpDestSpeed1, dir, currentJump.speed - 1));
+                q->push(newJump(currentNode, jumpDestSpeed2, dir, currentJump.speed - 1));
             if (!this->field->isOutOfBounds(jumpDestSpeed3))
-                q->push(newJump(currentNode, jumpDestSpeed1, dir, currentJump.speed));
+                q->push(newJump(currentNode, jumpDestSpeed3, dir, currentJump.speed));
             if (!this->field->isOutOfBounds(jumpDestSpeed4))
-                q->push(newJump(currentNode, jumpDestSpeed1, dir, currentJump.speed));
+                q->push(newJump(currentNode, jumpDestSpeed4, dir, currentJump.speed + 1));
         }
     }
 }

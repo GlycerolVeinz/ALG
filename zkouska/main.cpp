@@ -30,7 +30,7 @@ void solve(){
         if (currentNode->visited)
             continue;
 
-        std::cerr << jump.from->coord.first << " " << jump.from->coord.second << " -> " << jump.to.first << " " << jump.to.second << "\n";
+//        std::cerr << jump.from->coord.first << " " << jump.from->coord.second << " -> " << jump.to.first << " " << jump.to.second << "\n";
 
         currentNode->visited = true;
         currentNode->minPathLen = currentNode->minPathLen < (jump.from->minPathLen + 1) ?
