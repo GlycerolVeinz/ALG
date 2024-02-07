@@ -1,6 +1,6 @@
-#include <iostream>
+#include "Birds.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    Field *f = Field::readField();
     return 0;
 }

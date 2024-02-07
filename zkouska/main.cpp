@@ -6,9 +6,9 @@ void solve(){
     Coord start = std::make_pair(f->height - 1, 0);
     Coord end = std::make_pair(0, f->length - 1);
 
-    Node *startNode = f->getNode(start, RIGHT_DIR_NUM);
+    Node *startNode = f->getNode(start, UP_DIR_NUM);
     startNode->minPathLen = 0;
-    Jump first = newJump(startNode, start, RIGHT_DIR_NUM, 0);
+    Jump first = newJump(startNode, start, UP_DIR_NUM, 0, false);
     Frog *frog = new Frog(f, start, end);
 
     auto *q = new std::queue<Jump>;
@@ -33,18 +33,29 @@ void solve(){
 
 
 //        debugging
-//        std::cerr << jump.from->coord.first << " " << jump.from->coord.second << " -> " << jump.to.first << " " << jump.to.second << "\n";
+        cerr << jump.wasSpeed << ":\n";
+        cerr << jump.from->coord.first << " " << jump.from->coord.second << " -> " << jump.to.first << " " << jump.to.second << "\n";
+
 
         currentNode->visited = true;
         currentNode->minPathLen = currentNode->minPathLen < (jump.from->minPathLen + 1) ?
                                   currentNode->minPathLen :
                                   jump.from->minPathLen + 1;
 
+        jump.wasSpeed = jump.changedDir ? jump.wasSpeed + 1 : jump.wasSpeed;
+        currentNode->path = jump.from->path;
+        currentNode->path.push_back(jump.to);
+
 //        END CONDITION
         if (areEqualCords(currentNode->coord, frog->end)) {
-//            cout << currentNode->minPathLen;
             cout << jump.pathLen;
-            f->res = currentNode->minPathLen;
+
+            cerr << "Path Length: " << currentNode->minPathLen << "\n";
+            cerr << "Path: ";
+            for (const Coord &step : currentNode->path) {
+                cerr << "(" << step.first << ", " << step.second << ") -> ";
+            }
+            cerr << "(" << frog->end.first << ", " << frog->end.second << ")\n";
             break;
         }
 
@@ -52,11 +63,11 @@ void solve(){
     }
 
 //    print whole field
-//    for (auto dir : {0,1,2,3}){
+//    for (auto dir : {0,1,2,3}) {
 //        cerr << "\n\n" << dir << "\n";
-//        for (const auto& row : f->map[dir]){
-//            for (auto node : row){
-//                if (node->height > 0){
+//        for (const auto &row: f->map[dir]) {
+//            for (auto node: row) {
+//                if (node->height > 0) {
 //                    cerr << node->height << " ";
 //                } else if (node->visited) {
 //                    cerr << "X ";
@@ -65,6 +76,8 @@ void solve(){
 //                }
 //            }
 //            cerr << "\n";
+//        }
+//    }
 }
 
 

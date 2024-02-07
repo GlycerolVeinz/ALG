@@ -43,14 +43,19 @@ typedef struct {
 
     bool visited;
     size_t minPathLen;
+    vector<Coord> path;
 } Node;
 
-typedef struct {
+typedef struct Jump {
     Node *from;
     Coord to;
     SpeedVal direction;
-    SpeedVal speed;
+
+    SpeedVal wasSpeed;
+    SpeedVal currentSpeed;
+
     size_t pathLen;
+    bool changedDir;
 } Jump;
 
 typedef vector<vector<vector<Node *>>> map_t;
@@ -85,7 +90,7 @@ Field *readField();
 
 Node *makeNode(int y, int x, SpeedVal dir, SpeedVal h);
 
-Jump newJump(Node *from, Coord to, SpeedVal direction, SpeedVal speed);
+Jump newJump(Node *from, Coord to, SpeedVal direction, SpeedVal speed, bool was1);
 
 bool areEqualCords(Coord c1, Coord c2);
 

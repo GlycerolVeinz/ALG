@@ -10,23 +10,46 @@
 
 using std::pair;
 using std::vector;
+using std::cin;
+using std::cout;
+using std::cerr;
 
-typedef pair<int,int> Coord;
+typedef pair<int, int> Coord;
 
-typedef struct {
+class BirdSector;
+
+class Node{
+public:
     Coord coord;
-    int value;
+    int val;
 
     int dangerSumHorizontal;
     int dangerSumVertical;
-} Node;
 
-typedef struct{
+    BirdSector *inSector;
+
+    Node() = default;
+};
+
+class BirdSector {
+public:
     Coord leftCorner;
     int width;
     int height;
-    vector<Node*> nodes;
-} BirdSector;
+    vector<Node *>nodes;
 
+    explicit BirdSector(Node *n);
+};
 
+class Field{
+public:
+    vector<vector<Node *>> nodes;
+    vector<BirdSector *> sectors;
+    int height;
+    int width;
+
+    Field(int height, int width);
+
+    static Field *readField();
+};
 #endif //ZKOUSKA3_BIRDS_H
