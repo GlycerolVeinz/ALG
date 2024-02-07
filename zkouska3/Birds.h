@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <limits>
 
 using std::pair;
 using std::vector;
@@ -25,6 +26,12 @@ public:
 
     int dangerSumHorizontal;
     int dangerSumVertical;
+
+    int sectorsSumVertical;
+    int sectorsSumHorizontal;
+
+    int sectorNodesSumVertical;
+    int sectorNodesSumHorizontal;
 
     BirdSector *inSector;
 
@@ -47,9 +54,13 @@ public:
     vector<BirdSector *> sectors;
     int height;
     int width;
+    int res;
 
-    Field(int height, int width);
+    Field() = default;
 
     static Field *readField();
+    void printField();
+    bool coordOutOfBounds(Coord coord);
+    Node *getNode(Coord coord);
 };
 #endif //ZKOUSKA3_BIRDS_H

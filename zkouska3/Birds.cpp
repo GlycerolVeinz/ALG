@@ -13,11 +13,10 @@ Node *readVal(int y, int x) {
 }
 
 Field *Field::readField() {
-    int w,h;
+    auto *f = new Field;
 
-    cin >> h >> w;
-
-    auto *f = new Field(h, w);
+    cin >> f->height >> f->width;
+    f->res = -1;
 
     vector<vector<Node *>> fNodes;
     vector<BirdSector *> sectors;
@@ -32,12 +31,25 @@ Field *Field::readField() {
 
 //          make partial summs
 //            look to the left, and add n.val + prev.partialSumHorizontal
-            if (n->coord.second != 0)
+            if (n->coord.second != 0) {
                 n->dangerSumHorizontal = row.at(x - 1)->dangerSumHorizontal + n->val;
+                n->sectorsSumHorizontal = row.at(x - 1)->sectorsSumHorizontal;
+                n->sectorNodesSumHorizontal = row.at(x - 1)->sectorNodesSumHorizontal;
+            } else {
+                n->dangerSumHorizontal = 0;
+                n->sectorsSumHorizontal = 0;
+                n->sectorNodesSumHorizontal = 0;
+            }
 //            look up, and add n.val + prev.partialSumVertical
-            if (n->coord.first != 0)
+            if (n->coord.first != 0) {
                 n->dangerSumVertical = fNodes.at(y - 1).at(x)->dangerSumVertical + n->val;
-
+                n->sectorsSumVertical = fNodes.at(y - 1).at(x)->sectorsSumVertical;
+                n->sectorNodesSumVertical = fNodes.at(y - 1).at(x)->sectorNodesSumVertical;
+            } else {
+                n->dangerSumVertical = 0;
+                n->sectorsSumVertical = 0;
+                n->sectorNodesSumVertical = 0;
+            }
 //          if val == 0 -> start marking a new sector
 //              remember pointer to sector, and all Y values
             if (n->val == 0) {
@@ -49,10 +61,11 @@ Field *Field::readField() {
                     ++currentSector->width;
                 } else {
 //                look up for sector
-                    if (fNodes.at(y - 1).at(x)->val == 0) {
+                    if ((n->coord.first != 0) && (fNodes.at(y - 1).at(x)->val == 0)) {
                         currentSector = fNodes.at(y - 1).at(x)->inSector;
-                        ++currentSector->height;
 
+                        currentSector->height = currentSector->height < y - currentSector->leftCorner.first + 1 ?
+                                                y - currentSector->leftCorner.first + 1 : currentSector->height;
                     } else {
 //                new sector
                         currentSector = new BirdSector(n);
@@ -64,6 +77,9 @@ Field *Field::readField() {
 //                assign node to sector, and vice versa
                 n->inSector = currentSector;
                 currentSector->nodes.push_back(n);
+
+                ++n->sectorNodesSumHorizontal;
+                ++n->sectorNodesSumVertical;
             } else {
                 sectorMaking = false;
             }
@@ -79,14 +95,34 @@ Field *Field::readField() {
     return f;
 }
 
-Field::Field(int height, int width) {
-    this->width = width;
-    this->height = height;
+void Field::printField() {
+    for (int y = 0; y < this->height; ++y) {
+        for (int x = 0; x < this->width; ++x) {
+            cerr << this->nodes.at(y).at(x)->val << " ";
+        }
+        cerr << "\n";
+    }
 }
+
+bool Field::coordOutOfBounds(Coord coord) {
+    return (coord.first < 0) || (coord.first >= this->height) ||
+           (coord.second < 0) || (coord.second >= this->width);
+}
+
+Node *Field::getNode(Coord coord) {
+    Node *ret = nullptr;
+    if (!this->coordOutOfBounds(coord)) {
+        ret = this->nodes.at(coord.first).at(coord.second);
+    }
+    return ret;
+}
+
 
 BirdSector::BirdSector(Node *n) {
     this->width = 1;
     this->height = 1;
     this->leftCorner.first = n->coord.first;
     this->leftCorner.second = n->coord.second;
+    ++n->sectorsSumVertical;
+    ++n->sectorsSumHorizontal;
 }
