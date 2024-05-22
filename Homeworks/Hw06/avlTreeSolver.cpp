@@ -26,7 +26,7 @@ int main (){
         }
     }
 
-    std::cout << tree->maxDepth << " " << tree->rotationsCount << " " << tree->consolidationsCount << std::endl;
+    std::cout << std::max(tree->root->leftTreeDepth, tree->root->rightTreeDepth) + 1 << " " << tree->rotationsCount << " " << tree->consolidationsCount << "\n" << std::endl;
 
     return 0;
 }
@@ -116,6 +116,7 @@ void removeNode(AvlTree *tree, Node *node) {
             delete node;
             return;
         }
+        node->isLeftChild ? node->parent->leftTreeDepth = -1 : node->parent->rightTreeDepth = -1;
         node->isLeftChild ? node->parent->left = nullptr : node->parent->right = nullptr;
         recalculateDepths(tree, node);
         delete node;

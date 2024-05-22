@@ -7,16 +7,18 @@
 void rotate(AvlTree *tree, Node *node) {
     int depthDifference = node->leftTreeDepth - node->rightTreeDepth;
     if (depthDifference > 1){
-        if (node->left->leftTreeDepth >= node->left->rightTreeDepth){
+        if (node->left->leftTreeDepth > node->left->rightTreeDepth){
             rotateR(tree, node);
         } else {
             rotateLR(tree, node);
+            ++tree->rotationsCount;
         }
     } else if (depthDifference < -1){
-        if (node->right->rightTreeDepth >= node->right->leftTreeDepth){
+        if (node->right->rightTreeDepth > node->right->leftTreeDepth){
             rotateL(tree, node);
         } else {
             rotateRL(tree, node);
+            ++tree->rotationsCount;
         }
     }
     ++tree->rotationsCount;
@@ -49,7 +51,7 @@ void rotateR(AvlTree *tree, Node *node) {
     startingRootNode->parent = startingLeftChild;
     startingRootNode->isLeftChild = false;
     startingRootNode->left = startingLeftChildRightChild;
-    startingRootNode->leftTreeDepth = startingRootNode->leftTreeDepth - 2;
+    startingRootNode->leftTreeDepth -= 2;
     --startingRootNode->depth;
 
     if (startingLeftChildRightChild != nullptr) {
@@ -84,7 +86,7 @@ void rotateL(AvlTree *tree, Node *node) {
     startingRootNode->parent = startingRightChild;
     startingRootNode->isLeftChild = true;
     startingRootNode->right = startingRightChildLeftChild;
-    startingRootNode->rightTreeDepth = startingRootNode->rightTreeDepth - 2;
+    startingRootNode->rightTreeDepth -= 2;
 
     if (startingRightChildLeftChild != nullptr) {
         startingRightChildLeftChild->parent = startingRootNode;
@@ -110,27 +112,20 @@ void addRoot(AvlTree *tree, Node *node) {
 }
 
 void recalculateDepths(AvlTree *tree, Node *node){
-    Node * currentNode = node;
-    while ( currentNode && currentNode->parent ){
+    Node *currentNode = node;
+    while ( currentNode && currentNode->parent){
         if (currentNode->isLeftChild){
-            int leftDepth = currentNode->left == nullptr ? -1 : currentNode->left->depth - currentNode->depth;
-            int rightDepth = currentNode->right == nullptr ? -1 : currentNode->right->depth - currentNode->depth;
-            if (leftDepth == -1 && rightDepth == -1){
-                currentNode->parent->leftTreeDepth = 0;
-            } else {
-                leftDepth > rightDepth ?
-                    currentNode->parent->leftTreeDepth = leftDepth + 1 : currentNode->parent->leftTreeDepth = rightDepth + 1;
+            currentNode->parent->leftTreeDepth = std::max(currentNode->leftTreeDepth, currentNode->rightTreeDepth) + 1;
+            if (!currentNode->parent->left){
+                currentNode->parent->leftTreeDepth = -1;
             }
         } else {
-            int leftDepth = currentNode->left == nullptr ? -1 : currentNode->left->depth - currentNode->depth;
-            int rightDepth = currentNode->right == nullptr ? -1 : currentNode->right->depth - currentNode->depth;
-            if (leftDepth == -1 && rightDepth == -1){
-                currentNode->parent->rightTreeDepth = 0;
-            } else {
-                leftDepth > rightDepth ?
-                    currentNode->parent->rightTreeDepth = leftDepth + 1 : currentNode->parent->rightTreeDepth = rightDepth + 1;
+            currentNode->parent->rightTreeDepth = std::max(currentNode->leftTreeDepth, currentNode->rightTreeDepth) + 1;
+            if (!currentNode->parent->right){
+                currentNode->parent->rightTreeDepth = -1;
             }
         }
+
         int depthDifference = currentNode->parent->leftTreeDepth - currentNode->parent->rightTreeDepth;
         if (depthDifference > 1 || depthDifference < -1){
             rotate(tree, currentNode->parent);
@@ -139,8 +134,7 @@ void recalculateDepths(AvlTree *tree, Node *node){
         currentNode = currentNode->parent;
     }
 
-    tree->root->leftTreeDepth < tree->root->rightTreeDepth ?
-        tree->maxDepth = tree->root->rightTreeDepth : tree->maxDepth = tree->root->leftTreeDepth;
+    tree->maxDepth = std::max(tree->root->leftTreeDepth, tree->root->rightTreeDepth);
 }
 
 void addChild(AvlTree *tree, Node *parent, Node *child) {
